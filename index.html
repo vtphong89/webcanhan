@@ -928,91 +928,144 @@
           const resp = await fetch(TIMETABLE_URL, { cache: "no-store" });
           if (!resp.ok) throw new Error("HTTP " + resp.status);
           const text = await resp.text();
-          console.log("CSV raw text (first 1000 chars):", text.substring(0, 1000));
+          console.log("CSV raw text (first 2000 chars):", text.substring(0, 2000));
           
           const rows = parseCsv(text);
           console.log("Parsed rows count:", rows.length);
-          console.log("First 5 rows:", rows.slice(0, 5));
+          console.log("First 10 rows:", rows.slice(0, 10));
           
           if (!rows.length) throw new Error("Không có dữ liệu");
 
-          // Parse header để tìm cột - thử nhiều cách
-          let headerRowIdx = 0;
-          let header = rows[0] || [];
+          // Tìm header row với các cột: TIẾT, T2, T3, T4, T5, T6, T7, CN
+          let headerRowIdx = -1;
+          let colMap = {};
           
-          // Tìm dòng header (có thể không phải dòng đầu tiên)
-          for (let i = 0; i < Math.min(5, rows.length); i++) {
-            const testRow = rows[i] || [];
-            const testRowLower = testRow.map(c => (c || "").toLowerCase().trim()).join(" ");
-            if (testRowLower.includes("thứ") || testRowLower.includes("tiết") || testRowLower.includes("môn")) {
-              header = testRow;
+          for (let i = 0; i < Math.min(10, rows.length); i++) {
+            const row = rows[i] || [];
+            const rowLower = row.map(c => (c || "").toLowerCase().trim());
+            
+            // Tìm cột TIẾT và các cột T2-T7, CN
+            let foundTiet = false;
+            let foundDays = 0;
+            const tempColMap = {};
+            
+            rowLower.forEach((cell, idx) => {
+              if (cell === "tiết" || cell === "tiet" || cell === "period") {
+                tempColMap.tiet = idx;
+                foundTiet = true;
+              }
+              if (cell === "t2" || cell === "hai" || cell === "thứ hai") {
+                tempColMap.t2 = idx;
+                foundDays++;
+              }
+              if (cell === "t3" || cell === "ba" || cell === "thứ ba") {
+                tempColMap.t3 = idx;
+                foundDays++;
+              }
+              if (cell === "t4" || cell === "tư" || cell === "thứ tư") {
+                tempColMap.t4 = idx;
+                foundDays++;
+              }
+              if (cell === "t5" || cell === "năm" || cell === "thứ năm") {
+                tempColMap.t5 = idx;
+                foundDays++;
+              }
+              if (cell === "t6" || cell === "sáu" || cell === "thứ sáu") {
+                tempColMap.t6 = idx;
+                foundDays++;
+              }
+              if (cell === "t7" || cell === "bảy" || cell === "thứ bảy") {
+                tempColMap.t7 = idx;
+                foundDays++;
+              }
+              if (cell === "cn" || cell === "chủ nhật") {
+                tempColMap.cn = idx;
+                foundDays++;
+              }
+            });
+            
+            if (foundTiet && foundDays >= 3) {
               headerRowIdx = i;
+              colMap = tempColMap;
               break;
             }
           }
           
-          console.log("Header row (index", headerRowIdx, "):", header);
+          if (headerRowIdx === -1) {
+            throw new Error("Không tìm thấy header row với định dạng TIẾT, T2-T7, CN");
+          }
           
-          const colMap = {};
-          header.forEach((h, idx) => {
-            const hLower = (h || "").toLowerCase().trim();
-            // Tìm cột Thứ
-            if (!colMap.thu && (hLower.includes("thứ") || hLower === "thứ" || hLower === "thu" || hLower.includes("ngày"))) {
-              colMap.thu = idx;
-            }
-            // Tìm cột Tiết
-            if (!colMap.tiet && (hLower.includes("tiết") || hLower === "tiết" || hLower === "tiet" || hLower.includes("period") || hLower === "period")) {
-              colMap.tiet = idx;
-            }
-            // Tìm cột Môn
-            if (!colMap.mon && (hLower.includes("môn") || hLower === "môn" || hLower === "mon" || hLower.includes("subject") || hLower === "subject")) {
-              colMap.mon = idx;
-            }
-            // Tìm cột Giáo viên
-            if (!colMap.gv && (hLower.includes("giáo viên") || hLower.includes("gv") || hLower.includes("teacher") || hLower === "teacher")) {
-              colMap.gv = idx;
-            }
-            // Tìm cột Buổi
-            if (!colMap.buoi && (hLower.includes("buổi") || hLower === "buổi" || hLower === "buoi" || hLower.includes("session") || hLower === "session")) {
-              colMap.buoi = idx;
-            }
-          });
-
+          console.log("Header row index:", headerRowIdx);
           console.log("Column mapping:", colMap);
+          console.log("Header row:", rows[headerRowIdx]);
+
+          // Map cột thứ sang index trong bảng HTML (Hai=1, Ba=2, Tư=3, Năm=4, Sáu=5, Bảy=6)
+          const dayColMap = {
+            t2: 1, // Hai
+            t3: 2, // Ba
+            t4: 3, // Tư
+            t5: 4, // Năm
+            t6: 5, // Sáu
+            t7: 6  // Bảy
+            // CN không có trong bảng HTML (chỉ có 6 cột)
+          };
 
           // Parse dữ liệu từ dòng sau header
-          const timetableData = [];
+          const morningData = Array(5).fill(null).map(() => Array(6).fill(null));
+          const afternoonData = Array(5).fill(null).map(() => Array(6).fill(null));
+          
+          let currentSession = "morning"; // mặc định là sáng
+          let countAdded = 0;
+          
           for (let i = headerRowIdx + 1; i < rows.length; i++) {
             const row = rows[i] || [];
-            const item = {
-              thu: colMap.thu !== undefined && row[colMap.thu] ? String(row[colMap.thu]).trim() : "",
-              tiet: colMap.tiet !== undefined && row[colMap.tiet] ? String(row[colMap.tiet]).trim() : "",
-              mon: colMap.mon !== undefined && row[colMap.mon] ? String(row[colMap.mon]).trim() : "",
-              gv: colMap.gv !== undefined && row[colMap.gv] ? String(row[colMap.gv]).trim() : "",
-              buoi: colMap.buoi !== undefined && row[colMap.buoi] ? String(row[colMap.buoi]).trim() : ""
-            };
+            const firstCell = String(row[0] || "").trim().toLowerCase();
             
-            // Chỉ thêm nếu có đủ thông tin cơ bản
-            if (item.mon && item.tiet && item.thu) {
-              // Nếu không có cột buổi, thử đoán từ vị trí
-              if (!item.buoi) {
-                const totalRows = rows.length - headerRowIdx - 1;
-                const currentRowIdx = i - headerRowIdx - 1;
-                item.buoi = currentRowIdx < totalRows / 2 ? "sáng" : "chiều";
+            // Kiểm tra nếu là marker buổi (7H, 2H, SÁNG, CHIỀU)
+            if (firstCell.includes("7h") || firstCell.includes("sáng") || firstCell === "morning") {
+              currentSession = "morning";
+              continue;
+            }
+            if (firstCell.includes("2h") || firstCell.includes("chiều") || firstCell === "afternoon") {
+              currentSession = "afternoon";
+              continue;
+            }
+            if (firstCell.includes("nghỉ") || firstCell.includes("break")) {
+              continue; // Bỏ qua dòng nghỉ
+            }
+            
+            // Lấy số tiết từ cột đầu tiên
+            const periodStr = String(row[colMap.tiet] || row[0] || "").trim();
+            const period = parseInt(periodStr);
+            
+            if (!period || period < 1 || period > 5) continue;
+            
+            const rowIdx = period - 1;
+            const targetData = currentSession === "morning" ? morningData : afternoonData;
+            
+            // Đọc giá trị lớp từ các cột T2-T7
+            for (const [dayKey, dayIdx] of Object.entries(dayColMap)) {
+              const colIdx = colMap[dayKey];
+              if (colIdx !== undefined && colIdx < row.length) {
+                const cellValue = String(row[colIdx] || "").trim();
+                if (cellValue && cellValue !== "-" && cellValue !== "") {
+                  targetData[rowIdx][dayIdx - 1] = cellValue; // dayIdx - 1 vì array index từ 0
+                  countAdded++;
+                }
               }
-              timetableData.push(item);
             }
           }
 
-          console.log("Parsed timetable data count:", timetableData.length);
-          console.log("Sample data (first 10):", timetableData.slice(0, 10));
+          console.log("Morning data:", morningData);
+          console.log("Afternoon data:", afternoonData);
+          console.log("Total cells filled:", countAdded);
 
           // Render vào 2 bảng
-          renderTimetableTable("timetable-morning", timetableData, true);
-          renderTimetableTable("timetable-afternoon", timetableData, false);
+          renderTimetableGrid("timetable-morning", morningData);
+          renderTimetableGrid("timetable-afternoon", afternoonData);
 
           if (statusEl) {
-            statusEl.textContent = `Đã tải ${timetableData.length} môn học thành công.`;
+            statusEl.textContent = `Đã tải ${countAdded} lớp học thành công.`;
             statusEl.style.color = "#27ae60";
             setTimeout(() => {
               statusEl.style.display = "none";
@@ -1025,6 +1078,60 @@
             statusEl.textContent = `Lỗi: ${e.message}. Kiểm tra lại link CSV hoặc kết nối mạng. Mở Console (F12) để xem chi tiết.`;
             statusEl.style.color = "#e74c3c";
           }
+        }
+      }
+
+      // Hàm render mới cho grid format
+      function renderTimetableGrid(tableId, gridData) {
+        const table = document.getElementById(tableId);
+        if (!table) {
+          console.error(`Table ${tableId} not found`);
+          return;
+        }
+
+        const tbodyId = tableId === "timetable-morning" ? "timetable-morning-body" : "timetable-afternoon-body";
+        let tbody = document.getElementById(tbodyId);
+        if (!tbody) {
+          tbody = table.querySelector("tbody");
+        }
+        if (!tbody) {
+          console.error(`Tbody not found for ${tableId}`);
+          return;
+        }
+
+        // XÓA SẠCH DỮ LIỆU CŨ
+        tbody.innerHTML = "";
+
+        // Render từ grid data: 5 hàng (tiết 1-5) x 6 cột (Hai-Bảy)
+        for (let period = 1; period <= 5; period++) {
+          const tr = document.createElement("tr");
+          const periodTd = document.createElement("td");
+          periodTd.textContent = period;
+          tr.appendChild(periodTd);
+          
+          const rowIdx = period - 1;
+          for (let dayIdx = 1; dayIdx <= 6; dayIdx++) {
+            const colIdx = dayIdx - 1;
+            const cellValue = gridData[rowIdx] && gridData[rowIdx][colIdx];
+            
+            const td = document.createElement("td");
+            if (cellValue && cellValue.trim() !== "") {
+              td.textContent = cellValue;
+              // Có thể thêm class theo lớp học nếu cần
+              const classValue = cellValue.toLowerCase().trim();
+              if (classValue.includes("12c1") || classValue.includes("11b1")) {
+                td.className = "subject-toan"; // Ví dụ: Toán cho lớp này
+                td.setAttribute("data-tooltip", "Võ Thanh Phong");
+                td.setAttribute("data-tooltip-gvcn", "");
+              } else if (classValue.includes("hsg")) {
+                td.className = "subject-gdhn"; // Ví dụ: Học sinh giỏi
+              }
+            } else {
+              td.textContent = "-";
+            }
+            tr.appendChild(td);
+          }
+          tbody.appendChild(tr);
         }
       }
 
