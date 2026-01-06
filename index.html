@@ -1042,46 +1042,54 @@
             const firstCellFull = String(row[0] || "").trim();
             
             // Kiểm tra nếu là marker buổi (7H, 2H, SÁNG, CHIỀU)
+            // NHƯNG không skip dòng này - có thể dòng này cũng chứa số tiết và dữ liệu
+            let isSessionMarker = false;
             if (firstCell.includes("7h") || firstCell.includes("sáng") || firstCell === "morning" || firstCellFull.match(/^7[:\s]/i)) {
               currentSession = "morning";
-              console.log(`Row ${i}: Switching to MORNING session`);
-              continue;
+              isSessionMarker = true;
+              console.log(`Row ${i}: Switching to MORNING session (but will still parse this row if it has data)`);
             }
             if (firstCell.includes("2h") || firstCell.includes("chiều") || firstCell === "afternoon" || firstCellFull.match(/^2[:\s]/i)) {
               currentSession = "afternoon";
-              console.log(`Row ${i}: Switching to AFTERNOON session`);
-              continue;
+              isSessionMarker = true;
+              console.log(`Row ${i}: Switching to AFTERNOON session (but will still parse this row if it has data)`);
             }
             if (firstCell.includes("nghỉ") || firstCell.includes("break") || firstCell.includes("rest")) {
               continue; // Bỏ qua dòng nghỉ
             }
             
-            // Lấy số tiết từ cột TIẾT hoặc cột đầu tiên
+            // Lấy số tiết từ cột TIẾT (thường là cột B, index 1)
             let periodStr = "";
             let period = null;
             
-            // Thử từ cột TIẾT trước
+            // Ưu tiên: Thử từ cột TIẾT (thường là cột thứ 2, sau cột đầu có "7H"/"2H")
             if (colMap.tiet !== undefined && row[colMap.tiet] !== undefined) {
               periodStr = String(row[colMap.tiet]).trim();
               period = parseInt(periodStr);
+              console.log(`Row ${i}: Trying period from TIẾT column (index ${colMap.tiet}): "${periodStr}" -> ${period}`);
             }
             
-            // Nếu không có, thử từ cột đầu tiên
-            if ((!period || period < 1 || period > 5) && row[0]) {
-              periodStr = String(row[0]).trim();
-              period = parseInt(periodStr);
-            }
-            
-            // Nếu vẫn không có, tìm số trong 3 cột đầu tiên
+            // Nếu không có từ cột TIẾT, tìm số trong các cột từ index 1 trở đi (bỏ qua cột đầu có thể là "7H"/"2H")
             if (!period || period < 1 || period > 5) {
-              for (let j = 0; j < Math.min(5, row.length); j++) {
+              // Bắt đầu từ index 1 (cột thứ 2) để tránh lấy "7H"/"2H"
+              for (let j = 1; j < Math.min(6, row.length); j++) {
                 const testStr = String(row[j] || "").trim();
                 const testNum = parseInt(testStr);
                 if (testNum >= 1 && testNum <= 5) {
                   period = testNum;
                   periodStr = testStr;
+                  console.log(`Row ${i}: Found period ${period} from column index ${j}: "${testStr}"`);
                   break;
                 }
+              }
+            }
+            
+            // Nếu vẫn không có và không phải session marker, thử từ cột đầu tiên (fallback)
+            if ((!period || period < 1 || period > 5) && !isSessionMarker && row[0]) {
+              periodStr = String(row[0]).trim();
+              period = parseInt(periodStr);
+              if (period >= 1 && period <= 5) {
+                console.log(`Row ${i}: Found period ${period} from first column: "${periodStr}"`);
               }
             }
             
