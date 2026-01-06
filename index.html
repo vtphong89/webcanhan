@@ -262,6 +262,64 @@
         .countdown-value{font-size:32px;font-weight:800;letter-spacing:1px;margin-bottom:6px;color:#ffeb3b;text-shadow:0 0 12px rgba(255,235,59,0.8);}
         .countdown-label{font-size:14px;letter-spacing:.5px;color:#e3e7ff;}
         .countdown-note{margin-top:12px;text-align:center;font-size:14px;color:#e0e3ff;position:relative;z-index:1;}
+
+        /* Wheel visual */
+        .wheel-visual {
+            display: flex;
+            justify-content: center;
+            margin: 18px 0 20px;
+            position: relative;
+        }
+        .wheel-circle {
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background:
+              radial-gradient(circle at 30% 30%, #ffffff, #ffe9f2 40%, #ffd3b6 60%, #ff9a9e 80%);
+            box-shadow:
+              0 10px 25px rgba(0,0,0,0.25),
+              inset 0 0 0 6px rgba(255,255,255,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 4px solid rgba(255,255,255,0.9);
+            position: relative;
+            overflow: hidden;
+        }
+        .wheel-circle::before {
+            content: '';
+            position: absolute;
+            inset: 12px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.9), transparent 55%);
+            opacity: 0.85;
+        }
+        .wheel-pointer {
+            position: absolute;
+            top: -2px;
+            width: 0;
+            height: 0;
+            border-left: 16px solid transparent;
+            border-right: 16px solid transparent;
+            border-bottom: 26px solid var(--accent-color);
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.35));
+        }
+        #random-result {
+            position: relative;
+            z-index: 2;
+            font-size: 24px;
+            font-weight: 800;
+            color: #b31237;
+            text-shadow: 0 2px 4px rgba(255,255,255,0.6);
+            padding: 0 14px;
+        }
+        .wheel-circle.spinning {
+            animation: wheel-spin 0.9s linear infinite;
+        }
+        @keyframes wheel-spin {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
         @media (max-width:600px){
             .countdown-title{font-size:18px;}
             .countdown{grid-template-columns:repeat(2,minmax(120px,1fr));}
@@ -373,12 +431,15 @@
                         <option value="11B1">11B1</option>
                     </select>
                 </div>
-                <div id="wheel-status" class="subtext" style="margin-bottom: 10px; font-size: 13px;">
+                <div id="wheel-status" class="subtext" style="margin-bottom: 6px; font-size: 13px;">
                     Đang tải danh sách 12C1 từ Google Sheets...
                 </div>
-                <div id="random-result"
-                    style="font-size: 24px; font-weight: bold; color: var(--accent-color); margin-bottom: 15px; min-height: 40px;">
-                    ???</div>
+                <div class="wheel-visual">
+                    <div class="wheel-pointer"></div>
+                    <div class="wheel-circle" id="wheel-circle">
+                        <div id="random-result">???</div>
+                    </div>
+                </div>
                 <button onclick="spinRandom()" class="admission-btn"
                     style="background: var(--primary-color); color: white;">
                     <i class="fas fa-sync-alt"></i> Quay ngẫu nhiên
@@ -594,6 +655,7 @@
       const wheelClassSelect = document.getElementById("wheel-class-select");
       const wheelStatus = document.getElementById("wheel-status");
       const randomResultEl = document.getElementById("random-result");
+      const wheelCircle = document.getElementById("wheel-circle");
 
       let currentClassId = "12C1";
       let currentStudents = [];
@@ -684,6 +746,10 @@
           return;
         }
 
+        if (wheelCircle) {
+          wheelCircle.classList.add("spinning");
+        }
+
         const names = currentStudents.slice();
         const resultEl = randomResultEl;
         const start = performance.now();
@@ -709,6 +775,9 @@
             resultEl.style.color = "#e74c3c";
             resultEl.style.transform = "scale(1.2)";
             setTimeout(() => (resultEl.style.transform = "scale(1)"), 220);
+            if (wheelCircle) {
+              setTimeout(() => wheelCircle.classList.remove("spinning"), 220);
+            }
             return;
           }
 
