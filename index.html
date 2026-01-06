@@ -543,52 +543,8 @@
                         <th>Bảy</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td rowspan="2" class="subject-hdtn" style="vertical-align: middle;"
-                            data-tooltip="Phạm Thị Minh Châu">HĐTN</td>
-                        <td class="subject-anh" data-tooltip="Nguyễn Thanh Tuyền">Anh</td>
-                        <td class="subject-toan" data-tooltip="Võ Thanh Phong" data-tooltip-gvcn>Toán</td>
-                        <td class="subject-toan" data-tooltip="Võ Thanh Phong" data-tooltip-gvcn>Toán</td>
-                        <td class="subject-anh" data-tooltip="Nguyễn Thanh Tuyền">Anh</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td class="subject-anh" data-tooltip="Nguyễn Thanh Tuyền">Anh</td>
-                        <td class="subject-toan" data-tooltip="Võ Thanh Phong" data-tooltip-gvcn>Toán</td>
-                        <td class="subject-toan" data-tooltip="Võ Thanh Phong" data-tooltip-gvcn>Toán</td>
-                        <td class="subject-van" data-tooltip="Nguyễn Văn Thị">Văn</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td class="subject-dia" data-tooltip="Lê Ngọc Lài">Địa</td>
-                        <td class="subject-gdktpl" data-tooltip="Nguyễn Thị Cước">GDKT&PL</td>
-                        <td class="subject-su" data-tooltip="Bùi Văn Lới">Sử</td>
-                        <td class="subject-dia" data-tooltip="Lê Ngọc Lài">Địa</td>
-                        <td class="subject-van" data-tooltip="Nguyễn Văn Thị">Văn</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td class="subject-su" data-tooltip="Bùi Văn Lới">Sử</td>
-                        <td class="subject-van" data-tooltip="Nguyễn Văn Thị">Văn</td>
-                        <td class="subject-tin" data-tooltip="Nguyễn Hồng Nhung">Tin</td>
-                        <td class="subject-dia" data-tooltip="Lê Ngọc Lài">Địa</td>
-                        <td class="subject-cn" data-tooltip="Trần Lâm Tùng">CN(CN)</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td class="subject-tin" data-tooltip="Nguyễn Hồng Nhung">Tin</td>
-                        <td class="subject-van" data-tooltip="Nguyễn Văn Thị">Văn</td>
-                        <td class="subject-cn" data-tooltip="Trần Lâm Tùng">CN(CN)</td>
-                        <td class="subject-gdktpl" data-tooltip="Nguyễn Thị Cước">GDKT&PL</td>
-                        <td class="subject-shcn" data-tooltip="Võ Thanh Phong" data-tooltip-gvcn>SHCN</td>
-                        <td>-</td>
-                    </tr>
+                <tbody id="timetable-morning-body">
+                    <!-- Dữ liệu sẽ được load từ Google Sheets -->
                 </tbody>
             </table>
 
@@ -605,43 +561,8 @@
                         <th>Bảy</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>2</td>
-                        <td>-</td>
-                        <td class="subject-su" data-tooltip="Bùi Văn Lới">Sử</td>
-                        <td class="subject-van" data-tooltip="Nguyễn Văn Thị">Văn</td>
-                        <td class="subject-toan" data-tooltip="Võ Thanh Phong" data-tooltip-gvcn>Toán</td>
-                        <td class="subject-gdtc" data-tooltip="Trương Hoàng Em">GDTC</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>-</td>
-                        <td class="subject-su" data-tooltip="Bùi Văn Lới">Sử</td>
-                        <td class="subject-van" data-tooltip="Nguyễn Văn Thị">Văn</td>
-                        <td class="subject-toan" data-tooltip="Võ Thanh Phong" data-tooltip-gvcn>Toán</td>
-                        <td class="subject-gdtc" data-tooltip="Trương Hoàng Em">GDTC</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td class="subject-gdhn" data-tooltip="Phạm Thị Minh Châu">GDHN</td>
-                        <td class="subject-gdktpl" data-tooltip="Nguyễn Thị Cước">GDKT&PL</td>
-                        <td class="subject-dia" data-tooltip="Lê Ngọc Lài">Địa</td>
-                        <td class="subject-anh" data-tooltip="Nguyễn Thanh Tuyền">Anh</td>
-                        <td class="subject-gdqp" data-tooltip="Lê Minh Tuấn">GDQP</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td class="subject-gdhn" data-tooltip="Phạm Thị Minh Châu">GDHN</td>
-                        <td class="subject-gdktpl" data-tooltip="Nguyễn Thị Cước">GDKT&PL</td>
-                        <td class="subject-dia" data-tooltip="Lê Ngọc Lài">Địa</td>
-                        <td class="subject-anh" data-tooltip="Nguyễn Thanh Tuyền">Anh</td>
-                        <td class="subject-gdqp" data-tooltip="Lê Minh Tuấn">GDQP</td>
-                        <td>-</td>
-                    </tr>
+                <tbody id="timetable-afternoon-body">
+                    <!-- Dữ liệu sẽ được load từ Google Sheets -->
                 </tbody>
             </table>
         </section>
@@ -902,15 +823,29 @@
 
       function renderTimetableTable(tableId, data, isMorning) {
         const table = document.getElementById(tableId);
-        if (!table) return;
+        if (!table) {
+          console.error(`Table ${tableId} not found`);
+          return;
+        }
 
-        const tbody = table.querySelector("tbody");
-        if (!tbody) return;
+        const tbodyId = tableId === "timetable-morning" ? "timetable-morning-body" : "timetable-afternoon-body";
+        let tbody = document.getElementById(tbodyId);
+        if (!tbody) {
+          tbody = table.querySelector("tbody");
+        }
+        if (!tbody) {
+          console.error(`Tbody not found for ${tableId}`);
+          return;
+        }
 
-        // Tạo cấu trúc bảng: 5 hàng (tiết 1-5) x 7 cột (Tiết + 6 thứ)
-        const rows = Array(5).fill(null).map(() => Array(7).fill(null));
+        // XÓA SẠCH DỮ LIỆU CŨ
+        tbody.innerHTML = "";
+
+        // Tạo cấu trúc bảng: 5 hàng (tiết 1-5) x 6 cột (6 thứ)
+        const rows = Array(5).fill(null).map(() => Array(6).fill(null));
         
         // Điền dữ liệu vào mảng
+        let countAdded = 0;
         for (const item of data) {
           const dayIdx = getDayIndex(item.thu || item.thứ || "");
           const periodStr = String(item.tiet || item.tiết || item.period || "0").trim();
@@ -926,25 +861,33 @@
           }
 
           if (dayIdx >= 1 && dayIdx <= 6 && period >= 1 && period <= 5 && subject) {
-            // Cho phép ghi đè nếu cell trống hoặc cùng tiết
-            if (!rows[period - 1][dayIdx] || rows[period - 1][dayIdx].period === period) {
-              rows[period - 1][dayIdx] = { subject, teacher, class: getSubjectClass(subject), period };
+            // dayIdx từ 1-6, nhưng array index từ 0-5
+            const colIdx = dayIdx - 1;
+            const rowIdx = period - 1;
+            
+            if (!rows[rowIdx][colIdx]) {
+              rows[rowIdx][colIdx] = { subject, teacher, class: getSubjectClass(subject), period };
+              countAdded++;
             }
           }
         }
 
-        console.log(`Rendered ${isMorning ? 'morning' : 'afternoon'} table:`, rows);
+        console.log(`Rendered ${isMorning ? 'morning' : 'afternoon'} table: ${countAdded} items added`, rows);
 
         // Render vào tbody
-        tbody.innerHTML = "";
         for (let period = 1; period <= 5; period++) {
           const tr = document.createElement("tr");
-          tr.innerHTML = `<td>${period}</td>`;
+          const periodTd = document.createElement("td");
+          periodTd.textContent = period;
+          tr.appendChild(periodTd);
           
           for (let dayIdx = 1; dayIdx <= 6; dayIdx++) {
-            const cell = rows[period - 1][dayIdx];
+            const colIdx = dayIdx - 1;
+            const rowIdx = period - 1;
+            const cell = rows[rowIdx][colIdx];
+            
+            const td = document.createElement("td");
             if (cell && cell.subject) {
-              const td = document.createElement("td");
               td.className = cell.class || "";
               td.textContent = cell.subject;
               if (cell.teacher) {
@@ -953,10 +896,10 @@
                   td.setAttribute("data-tooltip-gvcn", "");
                 }
               }
-              tr.appendChild(td);
             } else {
-              tr.innerHTML += "<td>-</td>";
+              td.textContent = "-";
             }
+            tr.appendChild(td);
           }
           tbody.appendChild(tr);
         }
@@ -970,65 +913,114 @@
         }
 
         try {
-          if (statusEl) statusEl.textContent = "Đang tải thời khóa biểu từ Google Sheets...";
+          if (statusEl) {
+            statusEl.textContent = "Đang tải thời khóa biểu từ Google Sheets...";
+            statusEl.style.color = "#555";
+            statusEl.style.display = "block";
+          }
+          
+          // XÓA SẠCH DỮ LIỆU CŨ TRƯỚC
+          const morningBody = document.getElementById("timetable-morning-body");
+          const afternoonBody = document.getElementById("timetable-afternoon-body");
+          if (morningBody) morningBody.innerHTML = "";
+          if (afternoonBody) afternoonBody.innerHTML = "";
+          
           const resp = await fetch(TIMETABLE_URL, { cache: "no-store" });
           if (!resp.ok) throw new Error("HTTP " + resp.status);
           const text = await resp.text();
-          console.log("CSV raw text (first 500 chars):", text.substring(0, 500));
+          console.log("CSV raw text (first 1000 chars):", text.substring(0, 1000));
           
           const rows = parseCsv(text);
           console.log("Parsed rows count:", rows.length);
-          console.log("First 3 rows:", rows.slice(0, 3));
+          console.log("First 5 rows:", rows.slice(0, 5));
           
           if (!rows.length) throw new Error("Không có dữ liệu");
 
-          // Parse header để tìm cột
-          const header = rows[0] || [];
-          console.log("Header row:", header);
+          // Parse header để tìm cột - thử nhiều cách
+          let headerRowIdx = 0;
+          let header = rows[0] || [];
+          
+          // Tìm dòng header (có thể không phải dòng đầu tiên)
+          for (let i = 0; i < Math.min(5, rows.length); i++) {
+            const testRow = rows[i] || [];
+            const testRowLower = testRow.map(c => (c || "").toLowerCase().trim()).join(" ");
+            if (testRowLower.includes("thứ") || testRowLower.includes("tiết") || testRowLower.includes("môn")) {
+              header = testRow;
+              headerRowIdx = i;
+              break;
+            }
+          }
+          
+          console.log("Header row (index", headerRowIdx, "):", header);
           
           const colMap = {};
           header.forEach((h, idx) => {
             const hLower = (h || "").toLowerCase().trim();
-            if (hLower.includes("thứ") || hLower.includes("thu") || hLower === "thứ") colMap.thu = idx;
-            if (hLower.includes("tiết") || hLower.includes("tiet") || hLower.includes("period") || hLower === "tiết") colMap.tiet = idx;
-            if (hLower.includes("môn") || hLower.includes("mon") || hLower.includes("subject") || hLower === "môn") colMap.mon = idx;
-            if (hLower.includes("giáo viên") || hLower.includes("gv") || hLower.includes("teacher") || hLower.includes("giáo viên")) colMap.gv = idx;
-            if (hLower.includes("buổi") || hLower.includes("buoi") || hLower.includes("session") || hLower === "buổi") colMap.buoi = idx;
+            // Tìm cột Thứ
+            if (!colMap.thu && (hLower.includes("thứ") || hLower === "thứ" || hLower === "thu" || hLower.includes("ngày"))) {
+              colMap.thu = idx;
+            }
+            // Tìm cột Tiết
+            if (!colMap.tiet && (hLower.includes("tiết") || hLower === "tiết" || hLower === "tiet" || hLower.includes("period") || hLower === "period")) {
+              colMap.tiet = idx;
+            }
+            // Tìm cột Môn
+            if (!colMap.mon && (hLower.includes("môn") || hLower === "môn" || hLower === "mon" || hLower.includes("subject") || hLower === "subject")) {
+              colMap.mon = idx;
+            }
+            // Tìm cột Giáo viên
+            if (!colMap.gv && (hLower.includes("giáo viên") || hLower.includes("gv") || hLower.includes("teacher") || hLower === "teacher")) {
+              colMap.gv = idx;
+            }
+            // Tìm cột Buổi
+            if (!colMap.buoi && (hLower.includes("buổi") || hLower === "buổi" || hLower === "buoi" || hLower.includes("session") || hLower === "session")) {
+              colMap.buoi = idx;
+            }
           });
 
           console.log("Column mapping:", colMap);
 
-          // Nếu không tìm thấy cột buổi, có thể dữ liệu không có cột này
-          // Parse dữ liệu
-          const timetableData = rows.slice(1).map((row, rowIdx) => {
+          // Parse dữ liệu từ dòng sau header
+          const timetableData = [];
+          for (let i = headerRowIdx + 1; i < rows.length; i++) {
+            const row = rows[i] || [];
             const item = {
-              thu: colMap.thu !== undefined ? (row[colMap.thu] || "").trim() : "",
-              tiet: colMap.tiet !== undefined ? (row[colMap.tiet] || "").trim() : "",
-              mon: colMap.mon !== undefined ? (row[colMap.mon] || "").trim() : "",
-              gv: colMap.gv !== undefined ? (row[colMap.gv] || "").trim() : "",
-              buoi: colMap.buoi !== undefined ? (row[colMap.buoi] || "").trim() : ""
+              thu: colMap.thu !== undefined && row[colMap.thu] ? String(row[colMap.thu]).trim() : "",
+              tiet: colMap.tiet !== undefined && row[colMap.tiet] ? String(row[colMap.tiet]).trim() : "",
+              mon: colMap.mon !== undefined && row[colMap.mon] ? String(row[colMap.mon]).trim() : "",
+              gv: colMap.gv !== undefined && row[colMap.gv] ? String(row[colMap.gv]).trim() : "",
+              buoi: colMap.buoi !== undefined && row[colMap.buoi] ? String(row[colMap.buoi]).trim() : ""
             };
-            // Nếu không có cột buổi, thử đoán từ vị trí hoặc dữ liệu khác
-            if (!item.buoi && rowIdx < rows.length / 2) {
-              item.buoi = "sáng"; // Giả định nửa đầu là sáng
-            } else if (!item.buoi) {
-              item.buoi = "chiều"; // Nửa sau là chiều
+            
+            // Chỉ thêm nếu có đủ thông tin cơ bản
+            if (item.mon && item.tiet && item.thu) {
+              // Nếu không có cột buổi, thử đoán từ vị trí
+              if (!item.buoi) {
+                const totalRows = rows.length - headerRowIdx - 1;
+                const currentRowIdx = i - headerRowIdx - 1;
+                item.buoi = currentRowIdx < totalRows / 2 ? "sáng" : "chiều";
+              }
+              timetableData.push(item);
             }
-            return item;
-          }).filter(item => item.mon && item.tiet && item.thu); // Chỉ lấy dòng có đủ thông tin
+          }
 
-          console.log("Parsed timetable data (first 5):", timetableData.slice(0, 5));
+          console.log("Parsed timetable data count:", timetableData.length);
+          console.log("Sample data (first 10):", timetableData.slice(0, 10));
 
           // Render vào 2 bảng
           renderTimetableTable("timetable-morning", timetableData, true);
           renderTimetableTable("timetable-afternoon", timetableData, false);
 
-          if (statusEl) statusEl.textContent = `Đã tải ${timetableData.length} môn học thành công.`;
-          setTimeout(() => {
-            if (statusEl) statusEl.style.display = "none";
-          }, 3000);
+          if (statusEl) {
+            statusEl.textContent = `Đã tải ${timetableData.length} môn học thành công.`;
+            statusEl.style.color = "#27ae60";
+            setTimeout(() => {
+              statusEl.style.display = "none";
+            }, 3000);
+          }
         } catch (e) {
           console.error("Lỗi tải thời khóa biểu:", e);
+          console.error("Stack:", e.stack);
           if (statusEl) {
             statusEl.textContent = `Lỗi: ${e.message}. Kiểm tra lại link CSV hoặc kết nối mạng. Mở Console (F12) để xem chi tiết.`;
             statusEl.style.color = "#e74c3c";
