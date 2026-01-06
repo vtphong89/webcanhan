@@ -913,21 +913,27 @@
         // Điền dữ liệu vào mảng
         for (const item of data) {
           const dayIdx = getDayIndex(item.thu || item.thứ || "");
-          const period = parseInt(item.tiet || item.tiết || item.period || "0");
-          const subject = item.mon || item.môn || item.subject || "";
-          const teacher = item.gv || item.giáo_viên || item.teacher || "";
+          const periodStr = String(item.tiet || item.tiết || item.period || "0").trim();
+          const period = parseInt(periodStr);
+          const subject = (item.mon || item.môn || item.subject || "").trim();
+          const teacher = (item.gv || item.giáo_viên || item.teacher || "").trim();
           const buoi = (item.buoi || item.buổi || "").toLowerCase().trim();
 
-          // Lọc theo buổi
-          if (isMorning && !buoi.includes("sáng") && !buoi.includes("morning")) continue;
-          if (!isMorning && !buoi.includes("chiều") && !buoi.includes("afternoon")) continue;
+          // Lọc theo buổi (nếu có thông tin buổi)
+          if (buoi) {
+            if (isMorning && !buoi.includes("sáng") && !buoi.includes("morning") && buoi !== "s") continue;
+            if (!isMorning && !buoi.includes("chiều") && !buoi.includes("afternoon") && buoi !== "c") continue;
+          }
 
           if (dayIdx >= 1 && dayIdx <= 6 && period >= 1 && period <= 5 && subject) {
-            if (!rows[period - 1][dayIdx]) {
-              rows[period - 1][dayIdx] = { subject, teacher, class: getSubjectClass(subject) };
+            // Cho phép ghi đè nếu cell trống hoặc cùng tiết
+            if (!rows[period - 1][dayIdx] || rows[period - 1][dayIdx].period === period) {
+              rows[period - 1][dayIdx] = { subject, teacher, class: getSubjectClass(subject), period };
             }
           }
         }
+
+        console.log(`Rendered ${isMorning ? 'morning' : 'afternoon'} table:`, rows);
 
         // Render vào tbody
         tbody.innerHTML = "";
@@ -937,13 +943,13 @@
           
           for (let dayIdx = 1; dayIdx <= 6; dayIdx++) {
             const cell = rows[period - 1][dayIdx];
-            if (cell) {
+            if (cell && cell.subject) {
               const td = document.createElement("td");
               td.className = cell.class || "";
               td.textContent = cell.subject;
               if (cell.teacher) {
                 td.setAttribute("data-tooltip", cell.teacher);
-                if (cell.teacher.includes("Võ Thanh Phong")) {
+                if (cell.teacher.includes("Võ Thanh Phong") || cell.teacher.includes("Phong")) {
                   td.setAttribute("data-tooltip-gvcn", "");
                 }
               }
@@ -968,42 +974,63 @@
           const resp = await fetch(TIMETABLE_URL, { cache: "no-store" });
           if (!resp.ok) throw new Error("HTTP " + resp.status);
           const text = await resp.text();
+          console.log("CSV raw text (first 500 chars):", text.substring(0, 500));
+          
           const rows = parseCsv(text);
+          console.log("Parsed rows count:", rows.length);
+          console.log("First 3 rows:", rows.slice(0, 3));
+          
           if (!rows.length) throw new Error("Không có dữ liệu");
 
           // Parse header để tìm cột
           const header = rows[0] || [];
+          console.log("Header row:", header);
+          
           const colMap = {};
           header.forEach((h, idx) => {
             const hLower = (h || "").toLowerCase().trim();
-            if (hLower.includes("thứ") || hLower.includes("thu")) colMap.thu = idx;
-            if (hLower.includes("tiết") || hLower.includes("tiet") || hLower.includes("period")) colMap.tiet = idx;
-            if (hLower.includes("môn") || hLower.includes("mon") || hLower.includes("subject")) colMap.mon = idx;
-            if (hLower.includes("giáo viên") || hLower.includes("gv") || hLower.includes("teacher")) colMap.gv = idx;
-            if (hLower.includes("buổi") || hLower.includes("buoi") || hLower.includes("session")) colMap.buoi = idx;
+            if (hLower.includes("thứ") || hLower.includes("thu") || hLower === "thứ") colMap.thu = idx;
+            if (hLower.includes("tiết") || hLower.includes("tiet") || hLower.includes("period") || hLower === "tiết") colMap.tiet = idx;
+            if (hLower.includes("môn") || hLower.includes("mon") || hLower.includes("subject") || hLower === "môn") colMap.mon = idx;
+            if (hLower.includes("giáo viên") || hLower.includes("gv") || hLower.includes("teacher") || hLower.includes("giáo viên")) colMap.gv = idx;
+            if (hLower.includes("buổi") || hLower.includes("buoi") || hLower.includes("session") || hLower === "buổi") colMap.buoi = idx;
           });
 
+          console.log("Column mapping:", colMap);
+
+          // Nếu không tìm thấy cột buổi, có thể dữ liệu không có cột này
           // Parse dữ liệu
-          const timetableData = rows.slice(1).map(row => ({
-            thu: colMap.thu !== undefined ? row[colMap.thu] : "",
-            tiet: colMap.tiet !== undefined ? row[colMap.tiet] : "",
-            mon: colMap.mon !== undefined ? row[colMap.mon] : "",
-            gv: colMap.gv !== undefined ? row[colMap.gv] : "",
-            buoi: colMap.buoi !== undefined ? row[colMap.buoi] : ""
-          }));
+          const timetableData = rows.slice(1).map((row, rowIdx) => {
+            const item = {
+              thu: colMap.thu !== undefined ? (row[colMap.thu] || "").trim() : "",
+              tiet: colMap.tiet !== undefined ? (row[colMap.tiet] || "").trim() : "",
+              mon: colMap.mon !== undefined ? (row[colMap.mon] || "").trim() : "",
+              gv: colMap.gv !== undefined ? (row[colMap.gv] || "").trim() : "",
+              buoi: colMap.buoi !== undefined ? (row[colMap.buoi] || "").trim() : ""
+            };
+            // Nếu không có cột buổi, thử đoán từ vị trí hoặc dữ liệu khác
+            if (!item.buoi && rowIdx < rows.length / 2) {
+              item.buoi = "sáng"; // Giả định nửa đầu là sáng
+            } else if (!item.buoi) {
+              item.buoi = "chiều"; // Nửa sau là chiều
+            }
+            return item;
+          }).filter(item => item.mon && item.tiet && item.thu); // Chỉ lấy dòng có đủ thông tin
+
+          console.log("Parsed timetable data (first 5):", timetableData.slice(0, 5));
 
           // Render vào 2 bảng
           renderTimetableTable("timetable-morning", timetableData, true);
           renderTimetableTable("timetable-afternoon", timetableData, false);
 
-          if (statusEl) statusEl.textContent = "Đã tải thời khóa biểu thành công.";
+          if (statusEl) statusEl.textContent = `Đã tải ${timetableData.length} môn học thành công.`;
           setTimeout(() => {
             if (statusEl) statusEl.style.display = "none";
-          }, 2000);
+          }, 3000);
         } catch (e) {
           console.error("Lỗi tải thời khóa biểu:", e);
           if (statusEl) {
-            statusEl.textContent = "Không tải được thời khóa biểu. Kiểm tra lại link CSV hoặc kết nối mạng.";
+            statusEl.textContent = `Lỗi: ${e.message}. Kiểm tra lại link CSV hoặc kết nối mạng. Mở Console (F12) để xem chi tiết.`;
             statusEl.style.color = "#e74c3c";
           }
         }
