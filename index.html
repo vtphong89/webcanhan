@@ -940,9 +940,13 @@
           let headerRowIdx = -1;
           let colMap = {};
           
-          for (let i = 0; i < Math.min(10, rows.length); i++) {
+          // Thử tìm header trong 15 dòng đầu
+          for (let i = 0; i < Math.min(15, rows.length); i++) {
             const row = rows[i] || [];
-            const rowLower = row.map(c => (c || "").toLowerCase().trim());
+            const rowLower = row.map(c => String(c || "").toLowerCase().trim());
+            const rowJoined = rowLower.join(" ");
+            
+            console.log(`Checking row ${i} for header:`, row.slice(0, 8));
             
             // Tìm cột TIẾT và các cột T2-T7, CN
             let foundTiet = false;
@@ -950,49 +954,62 @@
             const tempColMap = {};
             
             rowLower.forEach((cell, idx) => {
-              if (cell === "tiết" || cell === "tiet" || cell === "period") {
+              const cellLower = String(cell).toLowerCase().trim();
+              if (cellLower === "tiết" || cellLower === "tiet" || cellLower === "period" || cellLower.includes("tiết")) {
                 tempColMap.tiet = idx;
                 foundTiet = true;
               }
-              if (cell === "t2" || cell === "hai" || cell === "thứ hai") {
+              if (cellLower === "t2" || cellLower === "hai" || cellLower.includes("thứ hai") || cellLower === "mon" || cellLower === "monday") {
                 tempColMap.t2 = idx;
                 foundDays++;
               }
-              if (cell === "t3" || cell === "ba" || cell === "thứ ba") {
+              if (cellLower === "t3" || cellLower === "ba" || cellLower.includes("thứ ba") || cellLower === "tue" || cellLower === "tuesday") {
                 tempColMap.t3 = idx;
                 foundDays++;
               }
-              if (cell === "t4" || cell === "tư" || cell === "thứ tư") {
+              if (cellLower === "t4" || cellLower === "tư" || cellLower.includes("thứ tư") || cellLower === "wed" || cellLower === "wednesday") {
                 tempColMap.t4 = idx;
                 foundDays++;
               }
-              if (cell === "t5" || cell === "năm" || cell === "thứ năm") {
+              if (cellLower === "t5" || cellLower === "năm" || cellLower.includes("thứ năm") || cellLower === "thu" || cellLower === "thursday") {
                 tempColMap.t5 = idx;
                 foundDays++;
               }
-              if (cell === "t6" || cell === "sáu" || cell === "thứ sáu") {
+              if (cellLower === "t6" || cellLower === "sáu" || cellLower.includes("thứ sáu") || cellLower === "fri" || cellLower === "friday") {
                 tempColMap.t6 = idx;
                 foundDays++;
               }
-              if (cell === "t7" || cell === "bảy" || cell === "thứ bảy") {
+              if (cellLower === "t7" || cellLower === "bảy" || cellLower.includes("thứ bảy") || cellLower === "sat" || cellLower === "saturday") {
                 tempColMap.t7 = idx;
                 foundDays++;
               }
-              if (cell === "cn" || cell === "chủ nhật") {
+              if (cellLower === "cn" || cellLower.includes("chủ nhật") || cellLower === "sun" || cellLower === "sunday") {
                 tempColMap.cn = idx;
                 foundDays++;
               }
             });
             
-            if (foundTiet && foundDays >= 3) {
+            // Nếu tìm thấy ít nhất TIẾT và 2 cột thứ trở lên
+            if (foundTiet && foundDays >= 2) {
               headerRowIdx = i;
               colMap = tempColMap;
+              console.log(`Found header at row ${i} with ${foundDays} day columns`);
+              break;
+            }
+            
+            // Nếu không tìm thấy TIẾT nhưng có nhiều cột thứ, có thể header không có TIẾT
+            if (!foundTiet && foundDays >= 4) {
+              headerRowIdx = i;
+              colMap = tempColMap;
+              colMap.tiet = 0; // Giả định cột đầu là TIẾT
+              console.log(`Found header at row ${i} (no TIẾT column, assuming first column is TIẾT)`);
               break;
             }
           }
           
           if (headerRowIdx === -1) {
-            throw new Error("Không tìm thấy header row với định dạng TIẾT, T2-T7, CN");
+            console.error("Could not find header row. First 10 rows:", rows.slice(0, 10));
+            throw new Error("Không tìm thấy header row với định dạng TIẾT, T2-T7, CN. Xem Console để biết chi tiết.");
           }
           
           console.log("Header row index:", headerRowIdx);
@@ -1019,62 +1036,94 @@
           
           for (let i = headerRowIdx + 1; i < rows.length; i++) {
             const row = rows[i] || [];
+            if (row.length === 0) continue;
+            
             const firstCell = String(row[0] || "").trim().toLowerCase();
+            const firstCellFull = String(row[0] || "").trim();
             
             // Kiểm tra nếu là marker buổi (7H, 2H, SÁNG, CHIỀU)
-            if (firstCell.includes("7h") || firstCell.includes("sáng") || firstCell === "morning") {
+            if (firstCell.includes("7h") || firstCell.includes("sáng") || firstCell === "morning" || firstCellFull.match(/^7[:\s]/i)) {
               currentSession = "morning";
+              console.log(`Row ${i}: Switching to MORNING session`);
               continue;
             }
-            if (firstCell.includes("2h") || firstCell.includes("chiều") || firstCell === "afternoon") {
+            if (firstCell.includes("2h") || firstCell.includes("chiều") || firstCell === "afternoon" || firstCellFull.match(/^2[:\s]/i)) {
               currentSession = "afternoon";
+              console.log(`Row ${i}: Switching to AFTERNOON session`);
               continue;
             }
-            if (firstCell.includes("nghỉ") || firstCell.includes("break") || firstCell === "") {
-              continue; // Bỏ qua dòng nghỉ hoặc dòng trống
+            if (firstCell.includes("nghỉ") || firstCell.includes("break") || firstCell.includes("rest")) {
+              continue; // Bỏ qua dòng nghỉ
             }
             
             // Lấy số tiết từ cột TIẾT hoặc cột đầu tiên
             let periodStr = "";
-            if (colMap.tiet !== undefined && row[colMap.tiet]) {
+            let period = null;
+            
+            // Thử từ cột TIẾT trước
+            if (colMap.tiet !== undefined && row[colMap.tiet] !== undefined) {
               periodStr = String(row[colMap.tiet]).trim();
-            } else if (row[0]) {
-              periodStr = String(row[0]).trim();
+              period = parseInt(periodStr);
             }
             
-            // Thử parse số tiết - có thể là "1", "2", v.v. hoặc chỉ có số
-            let period = parseInt(periodStr);
+            // Nếu không có, thử từ cột đầu tiên
+            if ((!period || period < 1 || period > 5) && row[0]) {
+              periodStr = String(row[0]).trim();
+              period = parseInt(periodStr);
+            }
             
-            // Nếu không parse được từ cột đầu, thử tìm số trong toàn bộ dòng
+            // Nếu vẫn không có, tìm số trong 3 cột đầu tiên
             if (!period || period < 1 || period > 5) {
-              // Tìm số tiết trong các cell đầu tiên
-              for (let j = 0; j < Math.min(3, row.length); j++) {
+              for (let j = 0; j < Math.min(5, row.length); j++) {
                 const testStr = String(row[j] || "").trim();
                 const testNum = parseInt(testStr);
                 if (testNum >= 1 && testNum <= 5) {
                   period = testNum;
+                  periodStr = testStr;
                   break;
                 }
               }
             }
             
-            // Nếu vẫn không tìm thấy số tiết hợp lệ, bỏ qua dòng này
+            // Nếu không tìm thấy số tiết hợp lệ, kiểm tra xem có dữ liệu trong các cột thứ không
             if (!period || period < 1 || period > 5) {
-              console.log(`Skipping row ${i}: no valid period found. First cell: "${firstCell}", periodStr: "${periodStr}"`);
-              continue;
+              // Kiểm tra xem có dữ liệu trong các cột T2-T7 không (có thể là dòng không có số tiết nhưng có dữ liệu)
+              let hasData = false;
+              for (const [dayKey, dayIdx] of Object.entries(dayColMap)) {
+                const colIdx = colMap[dayKey];
+                if (colIdx !== undefined && colIdx < row.length) {
+                  const cellValue = String(row[colIdx] || "").trim();
+                  if (cellValue && cellValue !== "-" && cellValue !== "" && cellValue.toLowerCase() !== "nghỉ") {
+                    hasData = true;
+                    break;
+                  }
+                }
+              }
+              
+              if (!hasData) {
+                // Không có dữ liệu, bỏ qua
+                continue;
+              } else {
+                // Có dữ liệu nhưng không có số tiết - có thể là dòng đặc biệt, bỏ qua
+                console.log(`Row ${i}: Has data but no valid period. First cell: "${firstCellFull}", row:`, row.slice(0, 8));
+                continue;
+              }
             }
             
             const rowIdx = period - 1;
             const targetData = currentSession === "morning" ? morningData : afternoonData;
+            
+            console.log(`Row ${i}: Parsing period ${period} for ${currentSession} session`);
             
             // Đọc giá trị lớp từ các cột T2-T7
             for (const [dayKey, dayIdx] of Object.entries(dayColMap)) {
               const colIdx = colMap[dayKey];
               if (colIdx !== undefined && colIdx < row.length) {
                 const cellValue = String(row[colIdx] || "").trim();
-                if (cellValue && cellValue !== "-" && cellValue !== "" && cellValue.toLowerCase() !== "nghỉ") {
+                if (cellValue && cellValue !== "-" && cellValue !== "" && cellValue.toLowerCase() !== "nghỉ" && cellValue.toLowerCase() !== "null") {
                   targetData[rowIdx][dayIdx - 1] = cellValue; // dayIdx - 1 vì array index từ 0
                   countAdded++;
+                  console.log(`  -> Period ${period}, Day ${dayKey}: "${cellValue}"`);
                 }
               }
             }
