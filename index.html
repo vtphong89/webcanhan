@@ -241,7 +241,7 @@
         .admission-card p{margin:0;font-size:14px;color:#e0e3ff;}
         .admission-note{margin-top:10px;font-size:13px;color:#e0e3ff;}
         .countdown-section{
-            margin:40px 0;padding:20px;border-radius:16px;
+            margin:32px 0;padding:10px;border-radius:16px;
             background:linear-gradient(135deg,#1e2a78,#4a90e2,#9c27b0);color:#fff;
             box-shadow:0 10px 30px rgba(0,0,0,0.25);position:relative;overflow:hidden;
         }
@@ -262,6 +262,33 @@
         .countdown-value{font-size:32px;font-weight:800;letter-spacing:1px;margin-bottom:6px;color:#ffeb3b;text-shadow:0 0 12px rgba(255,235,59,0.8);}
         .countdown-label{font-size:14px;letter-spacing:.5px;color:#e3e7ff;}
         .countdown-note{margin-top:12px;text-align:center;font-size:14px;color:#e0e3ff;position:relative;z-index:1;}
+        .countdown-section--compact{
+            margin:10px 0;
+            padding:6px 8px;
+            border-radius:10px;
+        }
+        .countdown-section--compact .countdown{
+            gap:6px;
+        }
+        .countdown-section--compact .countdown-title{
+            font-size:14px;
+            margin-bottom:4px;
+        }
+        .countdown-section--compact .countdown-card{
+            padding:6px;
+        }
+        .countdown-section--compact .countdown-value{
+            font-size:18px;
+        }
+        .countdown-section--compact .countdown-label{
+            font-size:10px;
+        }
+        .countdown-section--main{
+            background:linear-gradient(135deg,#1e2a78,#4a90e2,#00c6ff);
+        }
+        .countdown-section--hsg{
+            background:linear-gradient(135deg,#4a148c,#d500f9,#ff4081);
+        }
 
         /* Wheel visual */
         .wheel-visual {
@@ -400,6 +427,11 @@
                 <a href="#" data-link="career.registerForm" class="link-16" target="_blank"><i
                         class="fas fa-user-graduate"></i> Đăng ký tư vấn học đường</a>
             </div>
+            <div style="text-align:center; margin-top: 8px;">
+                <button id="week-button" class="admission-btn" type="button" style="min-width: 260px;">
+                    Tuần hiện tại: đang tính...
+                </button>
+            </div>
             <section class="contact-section">
                 <a href="#" data-link="gvcn.phone" class="btn-contact btn-call"><i class="fas fa-phone-volume"></i> Gọi Điện</a>
                 <a href="#" data-link="gvcn.zalo" class="btn-contact btn-zalo" target="_blank"><i
@@ -420,8 +452,55 @@
             </div>
         </section>
 
+        <!-- Countdown các mốc lớn trong năm -->
+        <section class="countdown-section countdown-section--compact countdown-section--main" id="phase-countdown">
+            <div class="countdown-title"><i class="fas fa-hourglass-half"></i> Đếm ngược mốc quan trọng</div>
+            <div class="countdown" id="countdown">
+                <div class="countdown-card">
+                    <div class="countdown-value" id="cd-days">--</div>
+                    <div class="countdown-label">Ngày</div>
+                </div>
+                <div class="countdown-card">
+                    <div class="countdown-value" id="cd-hours">--</div>
+                    <div class="countdown-label">Giờ</div>
+                </div>
+                <div class="countdown-card">
+                    <div class="countdown-value" id="cd-mins">--</div>
+                    <div class="countdown-label">Phút</div>
+                </div>
+                <div class="countdown-card">
+                    <div class="countdown-value" id="cd-secs">--</div>
+                    <div class="countdown-label">Giây</div>
+                </div>
+            </div>
+            <p class="countdown-note">Đang tính mốc tiếp theo...</p>
+        </section>
+
+        <!-- Countdown thi Học sinh giỏi -->
+        <section class="countdown-section countdown-section--compact countdown-section--hsg" style="margin-top: 12px;" id="hsg-countdown">
+            <div class="countdown-title"><i class="fas fa-star"></i> Đếm ngược thi Học sinh giỏi 12/03/2026</div>
+            <div class="countdown" id="countdown-hsg">
+                <div class="countdown-card">
+                    <div class="countdown-value" id="cd2-days">--</div>
+                    <div class="countdown-label">Ngày</div>
+                </div>
+                <div class="countdown-card">
+                    <div class="countdown-value" id="cd2-hours">--</div>
+                    <div class="countdown-label">Giờ</div>
+                </div>
+                <div class="countdown-card">
+                    <div class="countdown-value" id="cd2-mins">--</div>
+                    <div class="countdown-label">Phút</div>
+                </div>
+                <div class="countdown-card">
+                    <div class="countdown-value" id="cd2-secs">--</div>
+                    <div class="countdown-label">Giây</div>
+                </div>
+            </div>
+        </section>
+
         <section class="report-links">
-            <h2><i class="fas fa-gamepad"></i> TRỢ THỦ TRI BÀI </h2>
+            <h2><i class="fas fa-gamepad"></i> TRỢ THỦ TRI BÀI</h2>
             <div
                 style="text-align:center; background: white; padding: 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
                 <div style="margin-bottom: 12px;">
@@ -449,32 +528,10 @@
 
         <section class="timetable-section">
             <h2><i class="fas fa-calendar-alt"></i> Thời Khóa Biểu</h2>
-
-            <section class="countdown-section">
-                <div class="countdown-title"><i class="fas fa-hourglass-half"></i> Đếm ngược thi HK1</div>
-                <div class="countdown" id="countdown">
-                    <div class="countdown-card">
-                        <div class="countdown-value" id="cd-days">--</div>
-                        <div class="countdown-label">Ngày</div>
-                    </div>
-                    <div class="countdown-card">
-                        <div class="countdown-value" id="cd-hours">--</div>
-                        <div class="countdown-label">Giờ</div>
-                    </div>
-                    <div class="countdown-card">
-                        <div class="countdown-value" id="cd-mins">--</div>
-                        <div class="countdown-label">Phút</div>
-                    </div>
-                    <div class="countdown-card">
-                        <div class="countdown-value" id="cd-secs">--</div>
-                        <div class="countdown-label">Giây</div>
-                    </div>
-                </div>
-                <p class="countdown-note">Thi học kỳ 1: 29/12/2025</p>
-            </section>
+            <div id="timetable-status" style="text-align:center; margin: 10px 0; font-size: 14px; color: #555;">Đang tải thời khóa biểu...</div>
 
             <span class="session-title">Buổi Sáng (Áp dụng: 01-12-2025)</span>
-            <table>
+            <table id="timetable-morning">
                 <thead>
                     <tr>
                         <th>Tiết</th>
@@ -536,7 +593,7 @@
             </table>
 
             <span class="session-title">Trái Buổi: Chiều</span>
-            <table>
+            <table id="timetable-afternoon">
                 <thead>
                     <tr>
                         <th>Tiết</th>
@@ -643,14 +700,10 @@
         </div>
     </div>
 
+    <script src="config.js"></script>
     <script>
       // ====== Vòng quay may mắn theo Google Sheets (mỗi lớp một URL CSV riêng) ======
-      const WHEEL_SHEETS = {
-        "11B1":
-          "https://docs.google.com/spreadsheets/d/e/2PACX-1vQBGeRBBa8NlNAya3UcL7T0qI0jI2HVN20ibhrrpBX2w_58qRidrm2jlXmMws05Bqu6Gd1uRIdv_4Q_/pub?gid=0&single=true&output=csv",
-        "12C1":
-          "https://docs.google.com/spreadsheets/d/e/2PACX-1vQBGeRBBa8NlNAya3UcL7T0qI0jI2HVN20ibhrrpBX2w_58qRidrm2jlXmMws05Bqu6Gd1uRIdv_4Q_/pub?gid=1446670802&single=true&output=csv"
-      };
+      const WHEEL_SHEETS = typeof WHEEL_SHEETS_CONFIG !== "undefined" ? WHEEL_SHEETS_CONFIG : {};
 
       const wheelClassSelect = document.getElementById("wheel-class-select");
       const wheelStatus = document.getElementById("wheel-status");
@@ -734,7 +787,7 @@
           console.error(e);
           currentStudents = [];
           setWheelStatus(
-            `Không tải được danh sách lớp ${classId}. Kiểm tra lại link CSV (Publish to web) hoặc kết nối mạng.`
+            `Không tải được danh sách lớp ${classId}. Kiểm tra lại link CSV hoặc kết nối mạng.`
           );
         }
       }
@@ -798,6 +851,302 @@
         }
         loadStudentsForClass(currentClassId);
       });
+
+      // ====== Load và render Thời Khóa Biểu từ Google Sheets ======
+      const TIMETABLE_URL = typeof TIMETABLE_SHEET_URL !== "undefined" ? TIMETABLE_SHEET_URL : null;
+
+      // Map tên môn học sang class CSS
+      function getSubjectClass(subjectName) {
+        if (!subjectName) return "";
+        const name = subjectName.toLowerCase().trim();
+        const map = {
+          "toán": "subject-toan",
+          "văn": "subject-van",
+          "anh": "subject-anh",
+          "địa": "subject-dia",
+          "sử": "subject-su",
+          "gdkt&pl": "subject-gdktpl",
+          "gdktpl": "subject-gdktpl",
+          "tin": "subject-tin",
+          "cn": "subject-cn",
+          "công nghệ": "subject-cn",
+          "gdtc": "subject-gdtc",
+          "gdqp": "subject-gdqp",
+          "gdhn": "subject-gdhn",
+          "hdtn": "subject-hdtn",
+          "hđtn": "subject-hdtn",
+          "shcn": "subject-shcn"
+        };
+        for (const [key, cls] of Object.entries(map)) {
+          if (name.includes(key)) return cls;
+        }
+        return "";
+      }
+
+      // Map tên thứ sang index cột (Hai=1, Ba=2, Tư=3, Năm=4, Sáu=5, Bảy=6)
+      function getDayIndex(dayName) {
+        const day = dayName.toLowerCase().trim();
+        const map = {
+          "hai": 1, "thứ hai": 1, "2": 1,
+          "ba": 2, "thứ ba": 2, "3": 2,
+          "tư": 3, "thứ tư": 3, "4": 3,
+          "năm": 4, "thứ năm": 4, "5": 4,
+          "sáu": 5, "thứ sáu": 5, "6": 5,
+          "bảy": 6, "thứ bảy": 6, "7": 6
+        };
+        for (const [key, idx] of Object.entries(map)) {
+          if (day.includes(key)) return idx;
+        }
+        return -1;
+      }
+
+      function renderTimetableTable(tableId, data, isMorning) {
+        const table = document.getElementById(tableId);
+        if (!table) return;
+
+        const tbody = table.querySelector("tbody");
+        if (!tbody) return;
+
+        // Tạo cấu trúc bảng: 5 hàng (tiết 1-5) x 7 cột (Tiết + 6 thứ)
+        const rows = Array(5).fill(null).map(() => Array(7).fill(null));
+        
+        // Điền dữ liệu vào mảng
+        for (const item of data) {
+          const dayIdx = getDayIndex(item.thu || item.thứ || "");
+          const period = parseInt(item.tiet || item.tiết || item.period || "0");
+          const subject = item.mon || item.môn || item.subject || "";
+          const teacher = item.gv || item.giáo_viên || item.teacher || "";
+          const buoi = (item.buoi || item.buổi || "").toLowerCase().trim();
+
+          // Lọc theo buổi
+          if (isMorning && !buoi.includes("sáng") && !buoi.includes("morning")) continue;
+          if (!isMorning && !buoi.includes("chiều") && !buoi.includes("afternoon")) continue;
+
+          if (dayIdx >= 1 && dayIdx <= 6 && period >= 1 && period <= 5 && subject) {
+            if (!rows[period - 1][dayIdx]) {
+              rows[period - 1][dayIdx] = { subject, teacher, class: getSubjectClass(subject) };
+            }
+          }
+        }
+
+        // Render vào tbody
+        tbody.innerHTML = "";
+        for (let period = 1; period <= 5; period++) {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `<td>${period}</td>`;
+          
+          for (let dayIdx = 1; dayIdx <= 6; dayIdx++) {
+            const cell = rows[period - 1][dayIdx];
+            if (cell) {
+              const td = document.createElement("td");
+              td.className = cell.class || "";
+              td.textContent = cell.subject;
+              if (cell.teacher) {
+                td.setAttribute("data-tooltip", cell.teacher);
+                if (cell.teacher.includes("Võ Thanh Phong")) {
+                  td.setAttribute("data-tooltip-gvcn", "");
+                }
+              }
+              tr.appendChild(td);
+            } else {
+              tr.innerHTML += "<td>-</td>";
+            }
+          }
+          tbody.appendChild(tr);
+        }
+      }
+
+      async function loadTimetable() {
+        const statusEl = document.getElementById("timetable-status");
+        if (!TIMETABLE_URL) {
+          if (statusEl) statusEl.textContent = "Chưa cấu hình URL thời khóa biểu.";
+          return;
+        }
+
+        try {
+          if (statusEl) statusEl.textContent = "Đang tải thời khóa biểu từ Google Sheets...";
+          const resp = await fetch(TIMETABLE_URL, { cache: "no-store" });
+          if (!resp.ok) throw new Error("HTTP " + resp.status);
+          const text = await resp.text();
+          const rows = parseCsv(text);
+          if (!rows.length) throw new Error("Không có dữ liệu");
+
+          // Parse header để tìm cột
+          const header = rows[0] || [];
+          const colMap = {};
+          header.forEach((h, idx) => {
+            const hLower = (h || "").toLowerCase().trim();
+            if (hLower.includes("thứ") || hLower.includes("thu")) colMap.thu = idx;
+            if (hLower.includes("tiết") || hLower.includes("tiet") || hLower.includes("period")) colMap.tiet = idx;
+            if (hLower.includes("môn") || hLower.includes("mon") || hLower.includes("subject")) colMap.mon = idx;
+            if (hLower.includes("giáo viên") || hLower.includes("gv") || hLower.includes("teacher")) colMap.gv = idx;
+            if (hLower.includes("buổi") || hLower.includes("buoi") || hLower.includes("session")) colMap.buoi = idx;
+          });
+
+          // Parse dữ liệu
+          const timetableData = rows.slice(1).map(row => ({
+            thu: colMap.thu !== undefined ? row[colMap.thu] : "",
+            tiet: colMap.tiet !== undefined ? row[colMap.tiet] : "",
+            mon: colMap.mon !== undefined ? row[colMap.mon] : "",
+            gv: colMap.gv !== undefined ? row[colMap.gv] : "",
+            buoi: colMap.buoi !== undefined ? row[colMap.buoi] : ""
+          }));
+
+          // Render vào 2 bảng
+          renderTimetableTable("timetable-morning", timetableData, true);
+          renderTimetableTable("timetable-afternoon", timetableData, false);
+
+          if (statusEl) statusEl.textContent = "Đã tải thời khóa biểu thành công.";
+          setTimeout(() => {
+            if (statusEl) statusEl.style.display = "none";
+          }, 2000);
+        } catch (e) {
+          console.error("Lỗi tải thời khóa biểu:", e);
+          if (statusEl) {
+            statusEl.textContent = "Không tải được thời khóa biểu. Kiểm tra lại link CSV hoặc kết nối mạng.";
+            statusEl.style.color = "#e74c3c";
+          }
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        loadTimetable();
+      });
+
+      // ====== Đếm ngược HK1 -> HK2 -> TN THPT ======
+      const EXAM_PHASES = (typeof EXAM_PHASES_CONFIG !== "undefined"
+        ? EXAM_PHASES_CONFIG
+        : []
+      ).map((p) => ({
+        label: p.label,
+        time: new Date(p.time),
+      }));
+
+      function getCurrentPhase() {
+        const now = new Date();
+        const future = EXAM_PHASES.filter((p) => p.time > now);
+        return future.length ? future[0] : null;
+      }
+
+      function renderCountdown() {
+        const daysEl = document.getElementById("cd-days");
+        const hoursEl = document.getElementById("cd-hours");
+        const minsEl = document.getElementById("cd-mins");
+        const secsEl = document.getElementById("cd-secs");
+        const noteEl = document.querySelector(".countdown-note");
+        const boxEl = document.getElementById("phase-countdown");
+        if (!daysEl || !EXAM_PHASES.length) return;
+
+        const phase = getCurrentPhase();
+        if (!phase) {
+          if (boxEl) boxEl.style.display = "none";
+          return;
+        }
+        if (boxEl) boxEl.style.display = "";
+
+        if (noteEl) {
+          noteEl.textContent = phase.label;
+        }
+
+        const now = new Date();
+        let diff = phase.time - now;
+        if (diff < 0) diff = 0;
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const mins = Math.floor((diff / (1000 * 60)) % 60);
+        const secs = Math.floor((diff / 1000) % 60);
+
+        daysEl.textContent = String(days).padStart(2, "0");
+        hoursEl.textContent = String(hours).padStart(2, "0");
+        minsEl.textContent = String(mins).padStart(2, "0");
+        secsEl.textContent = String(secs).padStart(2, "0");
+      }
+
+        renderCountdown();
+        setInterval(renderCountdown, 1000);
+
+        // Đếm ngược thi Học sinh giỏi 12/03/2026
+        const HSG_EXAM_TIME = typeof HSG_EXAM_TIME_CONFIG !== "undefined"
+          ? new Date(HSG_EXAM_TIME_CONFIG)
+          : null;
+
+        function renderHsgCountdown() {
+            const daysEl = document.getElementById("cd2-days");
+            const hoursEl = document.getElementById("cd2-hours");
+            const minsEl = document.getElementById("cd2-mins");
+            const secsEl = document.getElementById("cd2-secs");
+            const boxEl = document.getElementById("hsg-countdown");
+            if (!daysEl || !HSG_EXAM_TIME) return;
+
+            const now = new Date();
+            let diff = HSG_EXAM_TIME - now;
+            if (diff < 0) diff = 0;
+            if (diff === 0 && boxEl) {
+              boxEl.style.display = "none";
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const mins = Math.floor((diff / (1000 * 60)) % 60);
+            const secs = Math.floor((diff / 1000) % 60);
+
+            daysEl.textContent = String(days).padStart(2, "0");
+            hoursEl.textContent = String(hours).padStart(2, "0");
+            minsEl.textContent = String(mins).padStart(2, "0");
+            secsEl.textContent = String(secs).padStart(2, "0");
+        }
+
+        renderHsgCountdown();
+        setInterval(renderHsgCountdown, 1000);
+
+      // ====== Nút tuần hiện tại trong năm học ======
+      const SCHOOL_WEEKS =
+        typeof SCHOOL_WEEKS_CONFIG !== "undefined" ? SCHOOL_WEEKS_CONFIG : [];
+
+      function parseVNDate(str) {
+        const [d, m, y] = str.split("/").map(Number);
+        if (!d || !m || !y) return null;
+        return new Date(y, m - 1, d);
+      }
+
+      function findCurrentSchoolWeek() {
+        const today = new Date();
+        let chosen = null;
+        let closest = null;
+        let minDiff = Infinity;
+
+        for (const w of SCHOOL_WEEKS) {
+          const from = parseVNDate(w.from);
+          const to = parseVNDate(w.to);
+          if (!from || !to) continue;
+
+          if (today >= from && today <= to) {
+            chosen = w;
+            break;
+          }
+
+          const diff = Math.min(Math.abs(today - from), Math.abs(today - to));
+          if (diff < minDiff) {
+            minDiff = diff;
+            closest = w;
+          }
+        }
+
+        return chosen || closest || null;
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const weekBtn = document.getElementById("week-button");
+        const w = findCurrentSchoolWeek();
+        if (weekBtn && w) {
+          const label = `Tuần ${w.week}: ${w.from} → ${w.to}`;
+          weekBtn.textContent = label;
+          if (w.note) {
+            weekBtn.title = w.note;
+          }
+        }
+      });
     </script>
 
     <section class="contact-section">
@@ -808,5 +1157,4 @@
 </body>
 
 </html>
-
 
