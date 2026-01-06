@@ -556,6 +556,7 @@
                         <th>Năm</th>
                         <th>Sáu</th>
                         <th>Bảy</th>
+                        <th>CN</th>
                     </tr>
                 </thead>
                 <tbody id="timetable-morning-body">
@@ -574,9 +575,29 @@
                         <th>Năm</th>
                         <th>Sáu</th>
                         <th>Bảy</th>
+                        <th>CN</th>
                     </tr>
                 </thead>
                 <tbody id="timetable-afternoon-body">
+                    <!-- Dữ liệu sẽ được load từ Google Sheets -->
+                </tbody>
+            </table>
+
+            <span class="session-title">Buổi Tối</span>
+            <table id="timetable-evening">
+                <thead>
+                    <tr>
+                        <th>Tiết</th>
+                        <th>Hai</th>
+                        <th>Ba</th>
+                        <th>Tư</th>
+                        <th>Năm</th>
+                        <th>Sáu</th>
+                        <th>Bảy</th>
+                        <th>CN</th>
+                    </tr>
+                </thead>
+                <tbody id="timetable-evening-body">
                     <!-- Dữ liệu sẽ được load từ Google Sheets -->
                 </tbody>
             </table>
@@ -952,8 +973,10 @@
           // XÓA SẠCH DỮ LIỆU CŨ TRƯỚC
           const morningBody = document.getElementById("timetable-morning-body");
           const afternoonBody = document.getElementById("timetable-afternoon-body");
+          const eveningBody = document.getElementById("timetable-evening-body");
           if (morningBody) morningBody.innerHTML = "";
           if (afternoonBody) afternoonBody.innerHTML = "";
+          if (eveningBody) eveningBody.innerHTML = "";
           
           const resp = await fetch(TIMETABLE_URL, { cache: "no-store" });
           if (!resp.ok) throw new Error("HTTP " + resp.status);
@@ -1046,20 +1069,21 @@
           console.log("Column mapping:", colMap);
           console.log("Header row:", rows[headerRowIdx]);
 
-          // Map cột thứ sang index trong bảng HTML (Hai=1, Ba=2, Tư=3, Năm=4, Sáu=5, Bảy=6)
+          // Map cột thứ sang index trong bảng HTML (Hai=1, Ba=2, Tư=3, Năm=4, Sáu=5, Bảy=6, CN=7)
           const dayColMap = {
             t2: 1, // Hai
             t3: 2, // Ba
             t4: 3, // Tư
             t5: 4, // Năm
             t6: 5, // Sáu
-            t7: 6  // Bảy
-            // CN không có trong bảng HTML (chỉ có 6 cột)
+            t7: 6, // Bảy
+            cn: 7  // Chủ Nhật
           };
 
-          // Parse dữ liệu từ dòng sau header
-          const morningData = Array(5).fill(null).map(() => Array(6).fill(null));
-          const afternoonData = Array(5).fill(null).map(() => Array(6).fill(null));
+          // Parse dữ liệu từ dòng sau header (7 cột: Hai-Bảy-CN)
+          const morningData = Array(5).fill(null).map(() => Array(7).fill(null));
+          const afternoonData = Array(5).fill(null).map(() => Array(7).fill(null));
+          const eveningData = Array(5).fill(null).map(() => Array(7).fill(null));
           
           let currentSession = "morning"; // mặc định là sáng
           let countAdded = 0;
@@ -1071,7 +1095,7 @@
             const firstCell = String(row[0] || "").trim().toLowerCase();
             const firstCellFull = String(row[0] || "").trim();
             
-            // Kiểm tra nếu là marker buổi (7H, 2H, SÁNG, CHIỀU)
+            // Kiểm tra nếu là marker buổi (7H, 2H, 20H30, SÁNG, CHIỀU, TỐI)
             // NHƯNG không skip dòng này - có thể dòng này cũng chứa số tiết và dữ liệu
             let isSessionMarker = false;
             if (firstCell.includes("7h") || firstCell.includes("sáng") || firstCell === "morning" || firstCellFull.match(/^7[:\s]/i)) {
@@ -1083,6 +1107,11 @@
               currentSession = "afternoon";
               isSessionMarker = true;
               console.log(`Row ${i}: Switching to AFTERNOON session (but will still parse this row if it has data)`);
+            }
+            if (firstCell.includes("20h30") || firstCell.includes("20h") || firstCell.includes("tối") || firstCell.includes("evening") || firstCellFull.match(/^20[:\s]/i)) {
+              currentSession = "evening";
+              isSessionMarker = true;
+              console.log(`Row ${i}: Switching to EVENING session (but will still parse this row if it has data)`);
             }
             if (firstCell.includes("nghỉ") || firstCell.includes("break") || firstCell.includes("rest")) {
               continue; // Bỏ qua dòng nghỉ
@@ -1104,14 +1133,16 @@
               }
             }
             
-            // Nếu không có từ cột TIẾT, tìm số trong các cột từ index 1 trở đi (bỏ qua cột đầu có thể là "7H"/"2H")
+            // Nếu không có từ cột TIẾT, tìm số trong các cột từ index 1 trở đi (bỏ qua cột đầu có thể là "7H"/"2H"/"20H30")
             if (!period || period < 1 || period > 5) {
-              // Bắt đầu từ index 1 (cột thứ 2) để tránh lấy "7H"/"2H"
+              // Bắt đầu từ index 1 (cột thứ 2) để tránh lấy "7H"/"2H"/"20H30"
               for (let j = 1; j < Math.min(6, row.length); j++) {
                 const testStr = String(row[j] || "").trim();
                 // Bỏ qua nếu là marker buổi
                 if (testStr.toLowerCase().includes("7h") || testStr.toLowerCase().includes("2h") || 
-                    testStr.toLowerCase().includes("sáng") || testStr.toLowerCase().includes("chiều")) {
+                    testStr.toLowerCase().includes("20h") || testStr.toLowerCase().includes("20h30") ||
+                    testStr.toLowerCase().includes("sáng") || testStr.toLowerCase().includes("chiều") ||
+                    testStr.toLowerCase().includes("tối") || testStr.toLowerCase().includes("evening")) {
                   continue;
                 }
                 const testNum = parseInt(testStr);
@@ -1129,7 +1160,9 @@
               const firstStr = String(row[0]).trim();
               // Chỉ thử nếu không phải marker buổi
               if (!firstStr.toLowerCase().includes("7h") && !firstStr.toLowerCase().includes("2h") &&
-                  !firstStr.toLowerCase().includes("sáng") && !firstStr.toLowerCase().includes("chiều")) {
+                  !firstStr.toLowerCase().includes("20h") && !firstStr.toLowerCase().includes("20h30") &&
+                  !firstStr.toLowerCase().includes("sáng") && !firstStr.toLowerCase().includes("chiều") &&
+                  !firstStr.toLowerCase().includes("tối") && !firstStr.toLowerCase().includes("evening")) {
                 periodStr = firstStr;
                 period = parseInt(periodStr);
                 if (period >= 1 && period <= 5) {
@@ -1166,11 +1199,21 @@
             }
             
             const rowIdx = period - 1;
-            const targetData = currentSession === "morning" ? morningData : afternoonData;
+            // Chọn target data theo buổi
+            let targetData;
+            if (currentSession === "morning") {
+              targetData = morningData;
+            } else if (currentSession === "afternoon") {
+              targetData = afternoonData;
+            } else if (currentSession === "evening") {
+              targetData = eveningData;
+            } else {
+              targetData = morningData; // fallback
+            }
             
             console.log(`Row ${i}: Parsing period ${period} for ${currentSession} session`);
             
-            // Đọc giá trị lớp từ các cột T2-T7
+            // Đọc giá trị lớp từ các cột T2-T7 và CN
             for (const [dayKey, dayIdx] of Object.entries(dayColMap)) {
               const colIdx = colMap[dayKey];
               if (colIdx !== undefined && colIdx < row.length && row[colIdx] !== undefined && row[colIdx] !== null) {
@@ -1181,7 +1224,7 @@
                     cellValue.toLowerCase() !== "nghỉ ngơi" && cellValue.toLowerCase() !== "break") {
                   // Ghi đè vào đúng vị trí (dayIdx - 1 vì array index từ 0)
                   const arrayIdx = dayIdx - 1;
-                  if (arrayIdx >= 0 && arrayIdx < 6 && rowIdx >= 0 && rowIdx < 5) {
+                  if (arrayIdx >= 0 && arrayIdx < 7 && rowIdx >= 0 && rowIdx < 5) {
                     targetData[rowIdx][arrayIdx] = cellValue;
                     countAdded++;
                     console.log(`  -> Period ${period}, Day ${dayKey} (col ${colIdx}, arrayIdx ${arrayIdx}): "${cellValue}"`);
@@ -1191,13 +1234,15 @@
             }
           }
           
-          console.log(`Parsed ${currentSession} session. Periods found:`, {
+          console.log(`Parsed sessions. Periods found:`, {
             morning: morningData.map((r, i) => r.some(c => c) ? i + 1 : null).filter(x => x),
-            afternoon: afternoonData.map((r, i) => r.some(c => c) ? i + 1 : null).filter(x => x)
+            afternoon: afternoonData.map((r, i) => r.some(c => c) ? i + 1 : null).filter(x => x),
+            evening: eveningData.map((r, i) => r.some(c => c) ? i + 1 : null).filter(x => x)
           });
 
           console.log("Morning data:", morningData);
           console.log("Afternoon data:", afternoonData);
+          console.log("Evening data:", eveningData);
           console.log("Total cells filled:", countAdded);
           
           // Log các lớp đã được gán màu
@@ -1206,9 +1251,10 @@
             colorIndex: CLASS_COLORS.indexOf(color)
           })));
 
-          // Render vào 2 bảng
+          // Render vào 3 bảng
           renderTimetableGrid("timetable-morning", morningData);
           renderTimetableGrid("timetable-afternoon", afternoonData);
+          renderTimetableGrid("timetable-evening", eveningData);
 
           if (statusEl) {
             statusEl.textContent = `Đã tải ${countAdded} lớp học thành công.`;
@@ -1299,8 +1345,19 @@
           return;
         }
 
-        const tbodyId = tableId === "timetable-morning" ? "timetable-morning-body" : "timetable-afternoon-body";
-        let tbody = document.getElementById(tbodyId);
+        // Xác định tbody ID theo tableId
+        let tbodyId;
+        if (tableId === "timetable-morning") {
+          tbodyId = "timetable-morning-body";
+        } else if (tableId === "timetable-afternoon") {
+          tbodyId = "timetable-afternoon-body";
+        } else if (tableId === "timetable-evening") {
+          tbodyId = "timetable-evening-body";
+        } else {
+          tbodyId = null;
+        }
+        
+        let tbody = tbodyId ? document.getElementById(tbodyId) : null;
         if (!tbody) {
           tbody = table.querySelector("tbody");
         }
@@ -1312,12 +1369,12 @@
         // XÓA SẠCH DỮ LIỆU CŨ
         tbody.innerHTML = "";
 
-        // Đảm bảo gridData có đủ 5 hàng
+        // Đảm bảo gridData có đủ 5 hàng và 7 cột (Hai-Bảy-CN)
         while (gridData.length < 5) {
-          gridData.push(Array(6).fill(null));
+          gridData.push(Array(7).fill(null));
         }
 
-        // Render từ grid data: LUÔN render đủ 5 hàng (tiết 1-5) x 6 cột (Hai-Bảy)
+        // Render từ grid data: LUÔN render đủ 5 hàng (tiết 1-5) x 7 cột (Hai-Bảy-CN)
         for (let period = 1; period <= 5; period++) {
           const tr = document.createElement("tr");
           const periodTd = document.createElement("td");
@@ -1325,10 +1382,10 @@
           tr.appendChild(periodTd);
           
           const rowIdx = period - 1;
-          // Đảm bảo hàng có đủ 6 cột
-          const rowData = gridData[rowIdx] || Array(6).fill(null);
+          // Đảm bảo hàng có đủ 7 cột
+          const rowData = gridData[rowIdx] || Array(7).fill(null);
           
-          for (let dayIdx = 1; dayIdx <= 6; dayIdx++) {
+          for (let dayIdx = 1; dayIdx <= 7; dayIdx++) {
             const colIdx = dayIdx - 1;
             const cellValue = rowData[colIdx];
             
