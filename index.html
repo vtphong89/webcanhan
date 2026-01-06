@@ -1160,6 +1160,12 @@
           console.log("Morning data:", morningData);
           console.log("Afternoon data:", afternoonData);
           console.log("Total cells filled:", countAdded);
+          
+          // Log các lớp đã được gán màu
+          console.log("Classes and their colors:", Array.from(classColorCache.entries()).map(([name, color]) => ({
+            class: name,
+            colorIndex: CLASS_COLORS.indexOf(color)
+          })));
 
           // Render vào 2 bảng
           renderTimetableGrid("timetable-morning", morningData);
@@ -1182,41 +1188,65 @@
         }
       }
 
-      // Hàm mapping màu theo lớp học
-      function getClassColorClass(className) {
-        if (!className) return "";
+      // Mảng 20 màu sắc đẹp để tự động phân phối cho các lớp
+      const CLASS_COLORS = [
+        { bg: "linear-gradient(135deg,#667eea,#764ba2)", text: "#fff" },      // 0: Tím
+        { bg: "linear-gradient(135deg,#f093fb,#f5576c)", text: "#fff" },      // 1: Hồng
+        { bg: "linear-gradient(135deg,#4facfe,#00f2fe)", text: "#fff" },      // 2: Xanh dương
+        { bg: "linear-gradient(135deg,#fa709a,#fee140)", text: "#fff" },      // 3: Vàng hồng
+        { bg: "linear-gradient(135deg,#43e97b,#38f9d7)", text: "#fff" },      // 4: Xanh lá
+        { bg: "linear-gradient(135deg,#30cfd0,#330867)", text: "#fff" },      // 5: Xanh đậm
+        { bg: "linear-gradient(135deg,#ff8a80,#ea6100)", text: "#fff" },      // 6: Cam đỏ
+        { bg: "linear-gradient(135deg,#ffecd2,#fcb69f)", text: "#333" },      // 7: Cam nhạt
+        { bg: "linear-gradient(135deg,#ffd700,#ffed4e)", text: "#333" },       // 8: Vàng
+        { bg: "linear-gradient(135deg,#a8edea,#fed6e3)", text: "#333" },      // 9: Xanh hồng nhạt
+        { bg: "linear-gradient(135deg,#84fab0,#8fd3f4)", text: "#333" },      // 10: Xanh lá nhạt
+        { bg: "linear-gradient(135deg,#a1c4fd,#c2e9fb)", text: "#333" },      // 11: Xanh dương nhạt
+        { bg: "linear-gradient(135deg,#d4fc79,#96e6a1)", text: "#333" },      // 12: Xanh vàng
+        { bg: "linear-gradient(135deg,#ff9a9e,#fecfef)", text: "#333" },      // 13: Hồng nhạt
+        { bg: "linear-gradient(135deg,#fbc2eb,#a6c1ee)", text: "#fff" },      // 14: Tím hồng
+        { bg: "linear-gradient(135deg,#ffecd2,#fcb69f)", text: "#333" },      // 15: Cam be
+        { bg: "linear-gradient(135deg,#a8c0ff,#3e7bfa)", text: "#fff" },      // 16: Xanh đậm
+        { bg: "linear-gradient(135deg,#ff6b6b,#ee5a6f)", text: "#fff" },      // 17: Đỏ hồng
+        { bg: "linear-gradient(135deg,#c471ed,#f64f59)", text: "#fff" },      // 18: Tím đỏ
+        { bg: "linear-gradient(135deg,#12c2e9,#c471ed,#f64f59)", text: "#fff" } // 19: Cầu vồng
+      ];
+
+      // Cache để lưu mapping lớp -> màu (đảm bảo cùng lớp cùng màu)
+      const classColorCache = new Map();
+
+      // Hàm hash đơn giản để map tên lớp sang index màu (đảm bảo cùng lớp cùng màu)
+      function hashClassName(className) {
+        if (!className) return 0;
+        const normalized = String(className).toLowerCase().trim().replace(/[^a-z0-9]/g, "");
+        let hash = 0;
+        for (let i = 0; i < normalized.length; i++) {
+          const char = normalized.charCodeAt(i);
+          hash = ((hash << 5) - hash) + char;
+          hash = hash & hash; // Convert to 32bit integer
+        }
+        return Math.abs(hash) % CLASS_COLORS.length;
+      }
+
+      // Hàm lấy màu cho lớp học (tự động và nhất quán)
+      function getClassColor(className) {
+        if (!className) return null;
+        
         const classLower = String(className).toLowerCase().trim();
         
-        // Map các lớp học sang class CSS
-        const classMap = {
-          "12c1": "class-12c1",      // Tím
-          "11b1": "class-11b1",      // Hồng
-          "12c3": "class-12c3",      // Xanh dương
-          "hsg": "class-hsg",        // Vàng hồng
-          "shl": "class-shl",        // Xanh lá
-          "r-11": "class-r11",       // Xanh đậm
-          "r11": "class-r11",
-          "tt12": "class-tt12",      // Cam đỏ
-          "tt12-onl": "class-tt12onl", // Cam nhạt
-          "tt12onl": "class-tt12onl",
-          "soạn hsg": "class-soanhsg", // Vàng
-          "soanhsg": "class-soanhsg"
-        };
-        
-        // Tìm match (chính xác hoặc chứa)
-        for (const [key, cssClass] of Object.entries(classMap)) {
-          if (classLower === key || classLower.includes(key)) {
-            return cssClass;
-          }
+        // Kiểm tra cache trước
+        if (classColorCache.has(classLower)) {
+          return classColorCache.get(classLower);
         }
         
-        // Nếu không match, tự động tạo class từ tên lớp (loại bỏ ký tự đặc biệt)
-        const sanitized = classLower.replace(/[^a-z0-9]/g, "");
-        if (sanitized) {
-          return `class-${sanitized}`;
-        }
+        // Tính hash và lấy màu từ mảng
+        const colorIndex = hashClassName(classLower);
+        const color = CLASS_COLORS[colorIndex];
         
-        return "";
+        // Lưu vào cache
+        classColorCache.set(classLower, color);
+        
+        return color;
       }
 
       // Hàm render mới cho grid format
@@ -1264,10 +1294,24 @@
             if (cellValue && String(cellValue).trim() !== "" && String(cellValue).trim() !== "null") {
               td.textContent = cellValue;
               
-              // Áp dụng màu theo lớp học
-              const colorClass = getClassColorClass(cellValue);
-              if (colorClass) {
-                td.className = colorClass;
+              // Áp dụng màu tự động theo lớp học
+              const color = getClassColor(cellValue);
+              if (color) {
+                td.style.background = color.bg;
+                td.style.color = color.text;
+                td.style.fontWeight = "600";
+                td.style.cursor = "help";
+                td.style.transition = "all 0.2s ease";
+                
+                // Thêm hover effect
+                td.addEventListener("mouseenter", function() {
+                  this.style.transform = "scale(1.05)";
+                  this.style.boxShadow = "0 4px 12px rgba(0,0,0,0.2)";
+                });
+                td.addEventListener("mouseleave", function() {
+                  this.style.transform = "scale(1)";
+                  this.style.boxShadow = "none";
+                });
               }
               
               // Thêm tooltip cho các lớp GVCN dạy
