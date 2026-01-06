@@ -1045,6 +1045,40 @@ h2:hover i{
 
 .timetable-section{overflow-x:hidden;margin-bottom:30px;}
 
+.timetable-update-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.25);
+  color: #667eea;
+  text-decoration: none;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(102, 126, 234, 0.4);
+  backdrop-filter: blur(10px);
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(102, 126, 234, 0.15);
+}
+
+.timetable-update-btn:hover {
+  background: rgba(255, 255, 255, 0.35);
+  color: #5568d3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+  border-color: rgba(102, 126, 234, 0.6);
+}
+
+.timetable-update-btn:active {
+  transform: translateY(0);
+}
+
+.timetable-update-btn i {
+  font-size: 11px;
+}
+
 .toggle-header{
   user-select:none;
   position:relative;

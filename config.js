@@ -23,6 +23,9 @@ const HSG_EXAM_TIME_CONFIG = "2026-03-12T00:00:00";
 // URL Google Sheets cho Thời Khóa Biểu (CSV format)
 const TIMETABLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSg6G7zmzBAa2Qodj30H5DGd9jEqO9q07Z20tMPmUJz61eKvMAadqf9NjVq6jjOHw/pub?gid=484115559&single=true&output=csv";
 
+// Link để chỉnh sửa/cập nhật Thời Khóa Biểu trên Google Sheets
+const TIMETABLE_EDIT_URL = "https://docs.google.com/spreadsheets/d/1LF78-08bL93xfCu9hdps4OXm2BiJhzXs/edit?usp=sharing&ouid=108769202968830582103&rtpof=true&sd=true";
+
 // Khung tuần năm học
 const SCHOOL_WEEKS_CONFIG = [
   { week: 1, from: "05/09/2025", to: "13/09/2025", note: "Khai giảng 05/09" },

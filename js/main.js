@@ -8,6 +8,12 @@
 document.addEventListener("DOMContentLoaded", () => {
   console.log("Initializing modules...");
   
+  // Thiết lập link cập nhật lịch dạy từ config
+  const updateLink = document.getElementById("timetable-update-link");
+  if (updateLink && typeof TIMETABLE_EDIT_URL !== "undefined") {
+    updateLink.href = TIMETABLE_EDIT_URL;
+  }
+  
   // Khởi tạo các module
   if (typeof initWheel === "function") {
     initWheel();
