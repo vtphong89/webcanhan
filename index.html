@@ -1030,15 +1030,39 @@
               currentSession = "afternoon";
               continue;
             }
-            if (firstCell.includes("nghỉ") || firstCell.includes("break")) {
-              continue; // Bỏ qua dòng nghỉ
+            if (firstCell.includes("nghỉ") || firstCell.includes("break") || firstCell === "") {
+              continue; // Bỏ qua dòng nghỉ hoặc dòng trống
             }
             
-            // Lấy số tiết từ cột đầu tiên
-            const periodStr = String(row[colMap.tiet] || row[0] || "").trim();
-            const period = parseInt(periodStr);
+            // Lấy số tiết từ cột TIẾT hoặc cột đầu tiên
+            let periodStr = "";
+            if (colMap.tiet !== undefined && row[colMap.tiet]) {
+              periodStr = String(row[colMap.tiet]).trim();
+            } else if (row[0]) {
+              periodStr = String(row[0]).trim();
+            }
             
-            if (!period || period < 1 || period > 5) continue;
+            // Thử parse số tiết - có thể là "1", "2", v.v. hoặc chỉ có số
+            let period = parseInt(periodStr);
+            
+            // Nếu không parse được từ cột đầu, thử tìm số trong toàn bộ dòng
+            if (!period || period < 1 || period > 5) {
+              // Tìm số tiết trong các cell đầu tiên
+              for (let j = 0; j < Math.min(3, row.length); j++) {
+                const testStr = String(row[j] || "").trim();
+                const testNum = parseInt(testStr);
+                if (testNum >= 1 && testNum <= 5) {
+                  period = testNum;
+                  break;
+                }
+              }
+            }
+            
+            // Nếu vẫn không tìm thấy số tiết hợp lệ, bỏ qua dòng này
+            if (!period || period < 1 || period > 5) {
+              console.log(`Skipping row ${i}: no valid period found. First cell: "${firstCell}", periodStr: "${periodStr}"`);
+              continue;
+            }
             
             const rowIdx = period - 1;
             const targetData = currentSession === "morning" ? morningData : afternoonData;
@@ -1048,13 +1072,18 @@
               const colIdx = colMap[dayKey];
               if (colIdx !== undefined && colIdx < row.length) {
                 const cellValue = String(row[colIdx] || "").trim();
-                if (cellValue && cellValue !== "-" && cellValue !== "") {
+                if (cellValue && cellValue !== "-" && cellValue !== "" && cellValue.toLowerCase() !== "nghỉ") {
                   targetData[rowIdx][dayIdx - 1] = cellValue; // dayIdx - 1 vì array index từ 0
                   countAdded++;
                 }
               }
             }
           }
+          
+          console.log(`Parsed ${currentSession} session. Periods found:`, {
+            morning: morningData.map((r, i) => r.some(c => c) ? i + 1 : null).filter(x => x),
+            afternoon: afternoonData.map((r, i) => r.some(c => c) ? i + 1 : null).filter(x => x)
+          });
 
           console.log("Morning data:", morningData);
           console.log("Afternoon data:", afternoonData);
@@ -1102,7 +1131,12 @@
         // XÓA SẠCH DỮ LIỆU CŨ
         tbody.innerHTML = "";
 
-        // Render từ grid data: 5 hàng (tiết 1-5) x 6 cột (Hai-Bảy)
+        // Đảm bảo gridData có đủ 5 hàng
+        while (gridData.length < 5) {
+          gridData.push(Array(6).fill(null));
+        }
+
+        // Render từ grid data: LUÔN render đủ 5 hàng (tiết 1-5) x 6 cột (Hai-Bảy)
         for (let period = 1; period <= 5; period++) {
           const tr = document.createElement("tr");
           const periodTd = document.createElement("td");
@@ -1110,21 +1144,26 @@
           tr.appendChild(periodTd);
           
           const rowIdx = period - 1;
+          // Đảm bảo hàng có đủ 6 cột
+          const rowData = gridData[rowIdx] || Array(6).fill(null);
+          
           for (let dayIdx = 1; dayIdx <= 6; dayIdx++) {
             const colIdx = dayIdx - 1;
-            const cellValue = gridData[rowIdx] && gridData[rowIdx][colIdx];
+            const cellValue = rowData[colIdx];
             
             const td = document.createElement("td");
-            if (cellValue && cellValue.trim() !== "") {
+            if (cellValue && String(cellValue).trim() !== "" && String(cellValue).trim() !== "null") {
               td.textContent = cellValue;
               // Có thể thêm class theo lớp học nếu cần
-              const classValue = cellValue.toLowerCase().trim();
+              const classValue = String(cellValue).toLowerCase().trim();
               if (classValue.includes("12c1") || classValue.includes("11b1")) {
                 td.className = "subject-toan"; // Ví dụ: Toán cho lớp này
                 td.setAttribute("data-tooltip", "Võ Thanh Phong");
                 td.setAttribute("data-tooltip-gvcn", "");
               } else if (classValue.includes("hsg")) {
                 td.className = "subject-gdhn"; // Ví dụ: Học sinh giỏi
+              } else if (classValue.includes("shl")) {
+                td.className = "subject-shcn"; // Sinh hoạt lớp
               }
             } else {
               td.textContent = "-";
@@ -1133,6 +1172,8 @@
           }
           tbody.appendChild(tr);
         }
+        
+        console.log(`Rendered ${tableId}: 5 rows created`);
       }
 
       document.addEventListener("DOMContentLoaded", () => {
