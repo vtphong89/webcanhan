@@ -920,12 +920,23 @@
         }
       }
 
+      // Flag để tránh load đồng thời nhiều lần
+      let isLoadingTimetable = false;
+
       async function loadTimetable() {
+        // Tránh load đồng thời nhiều lần
+        if (isLoadingTimetable) {
+          console.log("Timetable đang được load, bỏ qua request này");
+          return;
+        }
+        
         const statusEl = document.getElementById("timetable-status");
         if (!TIMETABLE_URL) {
           if (statusEl) statusEl.textContent = "Chưa cấu hình URL thời khóa biểu.";
           return;
         }
+
+        isLoadingTimetable = true;
 
         try {
           if (statusEl) {
@@ -933,6 +944,10 @@
             statusEl.style.color = "#555";
             statusEl.style.display = "block";
           }
+          
+          // RESET CACHE MÀU mỗi lần load để đảm bảo nhất quán
+          classColorCache.clear();
+          console.log("Reset color cache");
           
           // XÓA SẠCH DỮ LIỆU CŨ TRƯỚC
           const morningBody = document.getElementById("timetable-morning-body");
@@ -1078,10 +1093,15 @@
             let period = null;
             
             // Ưu tiên: Thử từ cột TIẾT (thường là cột thứ 2, sau cột đầu có "7H"/"2H")
-            if (colMap.tiet !== undefined && row[colMap.tiet] !== undefined) {
+            if (colMap.tiet !== undefined && row[colMap.tiet] !== undefined && row[colMap.tiet] !== null) {
               periodStr = String(row[colMap.tiet]).trim();
               period = parseInt(periodStr);
-              console.log(`Row ${i}: Trying period from TIẾT column (index ${colMap.tiet}): "${periodStr}" -> ${period}`);
+              if (period >= 1 && period <= 5) {
+                // Đã tìm thấy số tiết hợp lệ từ cột TIẾT
+                console.log(`Row ${i}: Period ${period} from TIẾT column (index ${colMap.tiet}): "${periodStr}"`);
+              } else {
+                period = null; // Reset nếu không hợp lệ
+              }
             }
             
             // Nếu không có từ cột TIẾT, tìm số trong các cột từ index 1 trở đi (bỏ qua cột đầu có thể là "7H"/"2H")
@@ -1089,11 +1109,16 @@
               // Bắt đầu từ index 1 (cột thứ 2) để tránh lấy "7H"/"2H"
               for (let j = 1; j < Math.min(6, row.length); j++) {
                 const testStr = String(row[j] || "").trim();
+                // Bỏ qua nếu là marker buổi
+                if (testStr.toLowerCase().includes("7h") || testStr.toLowerCase().includes("2h") || 
+                    testStr.toLowerCase().includes("sáng") || testStr.toLowerCase().includes("chiều")) {
+                  continue;
+                }
                 const testNum = parseInt(testStr);
                 if (testNum >= 1 && testNum <= 5) {
                   period = testNum;
                   periodStr = testStr;
-                  console.log(`Row ${i}: Found period ${period} from column index ${j}: "${testStr}"`);
+                  console.log(`Row ${i}: Period ${period} from column index ${j}: "${testStr}"`);
                   break;
                 }
               }
@@ -1101,10 +1126,17 @@
             
             // Nếu vẫn không có và không phải session marker, thử từ cột đầu tiên (fallback)
             if ((!period || period < 1 || period > 5) && !isSessionMarker && row[0]) {
-              periodStr = String(row[0]).trim();
-              period = parseInt(periodStr);
-              if (period >= 1 && period <= 5) {
-                console.log(`Row ${i}: Found period ${period} from first column: "${periodStr}"`);
+              const firstStr = String(row[0]).trim();
+              // Chỉ thử nếu không phải marker buổi
+              if (!firstStr.toLowerCase().includes("7h") && !firstStr.toLowerCase().includes("2h") &&
+                  !firstStr.toLowerCase().includes("sáng") && !firstStr.toLowerCase().includes("chiều")) {
+                periodStr = firstStr;
+                period = parseInt(periodStr);
+                if (period >= 1 && period <= 5) {
+                  console.log(`Row ${i}: Period ${period} from first column: "${periodStr}"`);
+                } else {
+                  period = null;
+                }
               }
             }
             
@@ -1141,12 +1173,19 @@
             // Đọc giá trị lớp từ các cột T2-T7
             for (const [dayKey, dayIdx] of Object.entries(dayColMap)) {
               const colIdx = colMap[dayKey];
-              if (colIdx !== undefined && colIdx < row.length) {
-                const cellValue = String(row[colIdx] || "").trim();
-                if (cellValue && cellValue !== "-" && cellValue !== "" && cellValue.toLowerCase() !== "nghỉ" && cellValue.toLowerCase() !== "null") {
-                  targetData[rowIdx][dayIdx - 1] = cellValue; // dayIdx - 1 vì array index từ 0
-                  countAdded++;
-                  console.log(`  -> Period ${period}, Day ${dayKey}: "${cellValue}"`);
+              if (colIdx !== undefined && colIdx < row.length && row[colIdx] !== undefined && row[colIdx] !== null) {
+                const cellValue = String(row[colIdx]).trim();
+                // Chỉ lấy giá trị nếu không rỗng và không phải dấu "-" hoặc "nghỉ"
+                if (cellValue && cellValue !== "-" && cellValue !== "" && 
+                    cellValue.toLowerCase() !== "nghỉ" && cellValue.toLowerCase() !== "null" &&
+                    cellValue.toLowerCase() !== "nghỉ ngơi" && cellValue.toLowerCase() !== "break") {
+                  // Ghi đè vào đúng vị trí (dayIdx - 1 vì array index từ 0)
+                  const arrayIdx = dayIdx - 1;
+                  if (arrayIdx >= 0 && arrayIdx < 6 && rowIdx >= 0 && rowIdx < 5) {
+                    targetData[rowIdx][arrayIdx] = cellValue;
+                    countAdded++;
+                    console.log(`  -> Period ${period}, Day ${dayKey} (col ${colIdx}, arrayIdx ${arrayIdx}): "${cellValue}"`);
+                  }
                 }
               }
             }
@@ -1185,6 +1224,9 @@
             statusEl.textContent = `Lỗi: ${e.message}. Kiểm tra lại link CSV hoặc kết nối mạng. Mở Console (F12) để xem chi tiết.`;
             statusEl.style.color = "#e74c3c";
           }
+        } finally {
+          // Luôn reset flag để cho phép load lại
+          isLoadingTimetable = false;
         }
       }
 
