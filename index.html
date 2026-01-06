@@ -126,7 +126,22 @@
         td.subject-gdhn{background:linear-gradient(135deg,#84fab0,#8fd3f4);color:#333;font-weight:600;}
         td.subject-hdtn{background:linear-gradient(135deg,#a1c4fd,#c2e9fb);color:#333;font-weight:600;}
         td.subject-shcn{background:linear-gradient(135deg,#d4fc79,#96e6a1);color:#333;font-weight:600;}
-        td[class*="subject-"]:hover{transform:scale(1.05);box-shadow:0 4px 12px rgba(0,0,0,0.2);transition:all .2s ease;}
+        /* Màu cho các lớp học */
+        td.class-12c1{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-weight:600;}
+        td.class-11b1{background:linear-gradient(135deg,#f093fb,#f5576c);color:#fff;font-weight:600;}
+        td.class-12c3{background:linear-gradient(135deg,#4facfe,#00f2fe);color:#fff;font-weight:600;}
+        td.class-hsg{background:linear-gradient(135deg,#fa709a,#fee140);color:#fff;font-weight:600;}
+        td.class-shl{background:linear-gradient(135deg,#43e97b,#38f9d7);color:#fff;font-weight:600;}
+        td.class-r11{background:linear-gradient(135deg,#30cfd0,#330867);color:#fff;font-weight:600;}
+        td.class-tt12{background:linear-gradient(135deg,#ff8a80,#ea6100);color:#fff;font-weight:600;}
+        td.class-tt12onl{background:linear-gradient(135deg,#ffecd2,#fcb69f);color:#333;font-weight:600;}
+        td.class-soanhsg{background:linear-gradient(135deg,#ffd700,#ffed4e);color:#333;font-weight:600;}
+        /* Màu mặc định cho các lớp khác (sẽ được tạo động nếu cần) */
+        td[class^="class-"]:not([class*="12c1"]):not([class*="11b1"]):not([class*="12c3"]):not([class*="hsg"]):not([class*="shl"]):not([class*="r11"]):not([class*="tt12"]):not([class*="soanhsg"]){
+            background:linear-gradient(135deg,#a8edea,#fed6e3);color:#333;font-weight:600;
+        }
+        td[class*="subject-"],td[class*="class-"]{cursor:help;}
+        td[class*="subject-"]:hover,td[class*="class-"]:hover{transform:scale(1.05);box-shadow:0 4px 12px rgba(0,0,0,0.2);transition:all .2s ease;}
         .session-title{font-weight:bold;color:var(--accent-color);margin-top:15px;margin-bottom:10px;display:block;}
         td[data-tooltip]{position:relative;cursor:help;}
         td[data-tooltip]:hover::after{
@@ -1167,6 +1182,43 @@
         }
       }
 
+      // Hàm mapping màu theo lớp học
+      function getClassColorClass(className) {
+        if (!className) return "";
+        const classLower = String(className).toLowerCase().trim();
+        
+        // Map các lớp học sang class CSS
+        const classMap = {
+          "12c1": "class-12c1",      // Tím
+          "11b1": "class-11b1",      // Hồng
+          "12c3": "class-12c3",      // Xanh dương
+          "hsg": "class-hsg",        // Vàng hồng
+          "shl": "class-shl",        // Xanh lá
+          "r-11": "class-r11",       // Xanh đậm
+          "r11": "class-r11",
+          "tt12": "class-tt12",      // Cam đỏ
+          "tt12-onl": "class-tt12onl", // Cam nhạt
+          "tt12onl": "class-tt12onl",
+          "soạn hsg": "class-soanhsg", // Vàng
+          "soanhsg": "class-soanhsg"
+        };
+        
+        // Tìm match (chính xác hoặc chứa)
+        for (const [key, cssClass] of Object.entries(classMap)) {
+          if (classLower === key || classLower.includes(key)) {
+            return cssClass;
+          }
+        }
+        
+        // Nếu không match, tự động tạo class từ tên lớp (loại bỏ ký tự đặc biệt)
+        const sanitized = classLower.replace(/[^a-z0-9]/g, "");
+        if (sanitized) {
+          return `class-${sanitized}`;
+        }
+        
+        return "";
+      }
+
       // Hàm render mới cho grid format
       function renderTimetableGrid(tableId, gridData) {
         const table = document.getElementById(tableId);
@@ -1211,16 +1263,18 @@
             const td = document.createElement("td");
             if (cellValue && String(cellValue).trim() !== "" && String(cellValue).trim() !== "null") {
               td.textContent = cellValue;
-              // Có thể thêm class theo lớp học nếu cần
-              const classValue = String(cellValue).toLowerCase().trim();
-              if (classValue.includes("12c1") || classValue.includes("11b1")) {
-                td.className = "subject-toan"; // Ví dụ: Toán cho lớp này
+              
+              // Áp dụng màu theo lớp học
+              const colorClass = getClassColorClass(cellValue);
+              if (colorClass) {
+                td.className = colorClass;
+              }
+              
+              // Thêm tooltip cho các lớp GVCN dạy
+              const classLower = String(cellValue).toLowerCase().trim();
+              if (classLower.includes("12c1") || classLower.includes("11b1") || classLower.includes("12c3")) {
                 td.setAttribute("data-tooltip", "Võ Thanh Phong");
                 td.setAttribute("data-tooltip-gvcn", "");
-              } else if (classValue.includes("hsg")) {
-                td.className = "subject-gdhn"; // Ví dụ: Học sinh giỏi
-              } else if (classValue.includes("shl")) {
-                td.className = "subject-shcn"; // Sinh hoạt lớp
               }
             } else {
               td.textContent = "-";
