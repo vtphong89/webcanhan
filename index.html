@@ -1369,13 +1369,16 @@
         // XÓA SẠCH DỮ LIỆU CŨ
         tbody.innerHTML = "";
 
-        // Đảm bảo gridData có đủ 5 hàng và 7 cột (Hai-Bảy-CN)
-        while (gridData.length < 5) {
+        // Số tiết hiển thị: sáng/chiều 5 tiết, tối chỉ 2 tiết cho bảng gọn lại
+        const totalPeriods = tableId === "timetable-evening" ? 2 : 5;
+
+        // Đảm bảo gridData có đủ số hàng cần thiết và 7 cột (Hai-Bảy-CN)
+        while (gridData.length < totalPeriods) {
           gridData.push(Array(7).fill(null));
         }
 
-        // Render từ grid data: LUÔN render đủ 5 hàng (tiết 1-5) x 7 cột (Hai-Bảy-CN)
-        for (let period = 1; period <= 5; period++) {
+        // Render từ grid data: số hàng theo totalPeriods (tiết 1-totalPeriods) x 7 cột (Hai-Bảy-CN)
+        for (let period = 1; period <= totalPeriods; period++) {
           const tr = document.createElement("tr");
           const periodTd = document.createElement("td");
           periodTd.textContent = period;
