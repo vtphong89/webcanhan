@@ -56,6 +56,10 @@ document.addEventListener("DOMContentLoaded", () => {
     initSchoolWeek();
   }
   
+  if (typeof initTeachingPlan === "function") {
+    initTeachingPlan();
+  }
+  
   console.log("All modules initialized.");
 });
 

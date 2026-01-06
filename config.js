@@ -26,6 +26,12 @@ const TIMETABLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSg
 // Link để chỉnh sửa/cập nhật Thời Khóa Biểu trên Google Sheets
 const TIMETABLE_EDIT_URL = "https://docs.google.com/spreadsheets/d/1LF78-08bL93xfCu9hdps4OXm2BiJhzXs/edit?usp=sharing&ouid=108769202968830582103&rtpof=true&sd=true";
 
+// URL Google Sheets cho Lịch Báo Giảng (CSV format)
+// Cột A: Tuần (số hoặc nhiều số cách nhau bằng dấu phẩy)
+// Cột B: Tiết thứ (số hoặc nhiều số cách nhau bằng dấu phẩy)
+// Cột C: Bài dạy (tên bài)
+const TEACHING_PLAN_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ8nwCjK3JbM_h6XH-2CLtIMrZ-t6BDxuAvvuz3dOPmk33M5kC3tMX0A0p__m_s8O5fCaQkHKvmR4vf/pub?gid=0&single=true&output=csv";
+
 // Khung tuần năm học
 const SCHOOL_WEEKS_CONFIG = [
   { week: 1, from: "05/09/2025", to: "13/09/2025", note: "Khai giảng 05/09" },
