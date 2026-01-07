@@ -34,10 +34,10 @@ const TIMETABLE_EDIT_URL = "https://docs.google.com/spreadsheets/d/1LF78-08bL93x
 // và publish mỗi sheet ra CSV với gid khác nhau.
 // Ví dụ bên dưới dùng cùng 1 URL, hãy thay bằng URL CSV thật của từng sheet.
 const TEACHING_PLAN_SHEETS = {
-  // Lớp 11 (gid=0)
-  lop11: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ8nwCjK3JbM_h6XH-2CLtIMrZ-t6BDxuAvvuz3dOPmk33M5kC3tMX0A0p__m_s8O5fCaQkHKvmR4vf/pub?gid=0&single=true&output=csv",
+  // Lớp 11 (gid=0) - link pubhtml như bạn cung cấp, code sẽ tự chuyển output=csv
+  lop11: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ8nwCjK3JbM_h6XH-2CLtIMrZ-t6BDxuAvvuz3dOPmk33M5kC3tMX0A0p__m_s8O5fCaQkHKvmR4vf/pubhtml?gid=0&single=true",
   // Lớp 12 (gid=1646673641)
-  lop12: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ8nwCjK3JbM_h6XH-2CLtIMrZ-t6BDxuAvvuz3dOPmk33M5kC3tMX0A0p__m_s8O5fCaQkHKvmR4vf/pub?gid=1646673641&single=true&output=csv"
+  lop12: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ8nwCjK3JbM_h6XH-2CLtIMrZ-t6BDxuAvvuz3dOPmk33M5kC3tMX0A0p__m_s8O5fCaQkHKvmR4vf/pubhtml?gid=1646673641&single=true"
 };
 
 // Khung tuần năm học

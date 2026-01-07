@@ -212,7 +212,9 @@ async function loadTeachingPlanForClass(classKey, url, currentWeek, label) {
       return;
     }
 
-    const fetchUrl = normalizeSheetUrl(url);
+    let fetchUrl = normalizeSheetUrl(url);
+    // Cache buster để tránh dùng lại dữ liệu cũ
+    fetchUrl += (fetchUrl.includes("?") ? "&" : "?") + "nocache=" + Date.now();
     
     const response = await fetch(fetchUrl, { cache: "no-store" });
     if (!response.ok) {
