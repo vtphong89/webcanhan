@@ -4,17 +4,18 @@
 function normalizeSheetUrl(url) {
   if (!url) return url;
   let out = url.trim();
+
+  // Nếu là link pubhtml, đổi thành pub và giữ nguyên query string
   if (out.includes("pubhtml")) {
-    // đổi pubhtml -> pub?output=csv
-    out = out.replace("pubhtml", "pub?output=csv");
-  } else if (!out.includes("output=csv")) {
-    // thêm output=csv nếu chưa có
-    if (out.includes("?")) {
-      out += "&output=csv";
-    } else {
-      out += "?output=csv";
-    }
+    out = out.replace("pubhtml?", "pub?");
+    out = out.replace("pubhtml", "pub"); // phòng trường hợp không có '?'
   }
+
+  // Bảo đảm có output=csv trong query
+  if (!/[\?&]output=csv/.test(out)) {
+    out += (out.includes("?") ? "&" : "?") + "output=csv";
+  }
+
   return out;
 }
 /**
