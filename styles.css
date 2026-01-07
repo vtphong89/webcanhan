@@ -1045,6 +1045,17 @@ h2:hover i{
 
 .timetable-section{overflow-x:hidden;margin-bottom:30px;}
 
+.report-links h2.toggle-header{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:16px;
+  border-radius:16px;
+}
+.report-links h2.toggle-header > div{
+  margin-left:auto;
+}
+
 .timetable-update-btn {
   display: inline-flex !important;
   align-items: center;
@@ -1733,6 +1744,47 @@ td[data-tooltip]:hover::before{
   .teaching-plan-embed,
   .wheel-card{
     padding:16px;
+    border-radius:12px;
+  }
+  .report-links h2.toggle-header{
+    padding:12px;
+    gap:8px;
+    font-size:18px;
+    line-height:1.25;
+  }
+  /* Thu nhỏ nút và control cho mobile */
+  .timetable-update-btn{
+    padding:3px 7px;
+    font-size:10px;
+    border-radius:6px;
+    gap:3px;
+  }
+  .timetable-update-btn i{
+    font-size:10px;
+  }
+  .tp-btn{
+    padding:5px 10px;
+    font-size:12px;
+    border-radius:8px;
+  }
+  .teaching-plan-controls{
+    gap:6px;
+    flex-wrap:wrap;
+  }
+  .wheel-duration-input{
+    height:30px;
+    padding:4px 6px;
+    font-size:12px;
+    width:48px;
+  }
+  .combo-dropdown{
+    padding:8px;
+    font-size:12px;
+    min-width:120px;
+  }
+  .admission-btn{
+    padding:10px 14px;
+    font-size:13px;
     border-radius:12px;
   }
 }
