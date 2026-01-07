@@ -103,13 +103,20 @@
         <section class="report-links">
             <h2><i class="fas fa-gamepad"></i> TRỢ THỦ TRI BÀI</h2>
             <div
-                style="text-align:center; background: white; padding: 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                <div style="margin-bottom: 12px;">
-                    <label for="wheel-class-select" style="font-weight:600;margin-right:8px;">Chọn lớp:</label>
-                    <select id="wheel-class-select" class="combo-dropdown" style="max-width: 220px; display:inline-block; color:#333; background:#fff; border-color:#ddd;">
-                        <option value="12C1">12C1</option>
-                        <option value="11B1">11B1</option>
-                    </select>
+                class="wheel-card">
+                <div class="wheel-controls">
+                    <div class="wheel-class-control">
+                        <label for="wheel-class-select" class="wheel-label">Chọn lớp:</label>
+                        <select id="wheel-class-select" class="combo-dropdown wheel-class-select">
+                            <option value="12C1">12C1</option>
+                            <option value="11B1">11B1</option>
+                        </select>
+                    </div>
+                    <div class="wheel-duration-control">
+                        <label for="wheel-duration-input" class="wheel-label">Giây quay:</label>
+                        <input id="wheel-duration-input" type="number" min="1" max="10" value="2"
+                               class="wheel-duration-input">
+                    </div>
                 </div>
                 <div id="wheel-status" class="subtext" style="margin-bottom: 6px; font-size: 13px;">
                     Đang tải danh sách 12C1 từ Google Sheets...

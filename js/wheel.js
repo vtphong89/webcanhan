@@ -6,11 +6,12 @@
 const WHEEL_SHEETS = typeof WHEEL_SHEETS_CONFIG !== "undefined" ? WHEEL_SHEETS_CONFIG : {};
 
 // DOM elements
-let wheelClassSelect, wheelStatus, randomResultEl, wheelCircle;
+let wheelClassSelect, wheelStatus, randomResultEl, wheelCircle, wheelDurationInput;
 
 // State
 let currentClassId = "12C1";
 let currentStudents = [];
+let wheelDurationSeconds = 2; // thời gian quay mặc định: 2s
 
 /**
  * Khởi tạo module wheel
@@ -20,6 +21,20 @@ function initWheel() {
   wheelStatus = document.getElementById("wheel-status");
   randomResultEl = document.getElementById("random-result");
   wheelCircle = document.getElementById("wheel-circle");
+  wheelDurationInput = document.getElementById("wheel-duration-input");
+
+  if (wheelDurationInput) {
+    wheelDurationInput.value = wheelDurationSeconds.toString();
+    wheelDurationInput.addEventListener("change", () => {
+      const val = parseFloat(wheelDurationInput.value);
+      if (!isNaN(val) && val > 0 && val <= 10) {
+        wheelDurationSeconds = val;
+      } else {
+        // reset về giá trị hợp lệ gần nhất
+        wheelDurationInput.value = wheelDurationSeconds.toString();
+      }
+    });
+  }
 
   if (wheelClassSelect) {
     wheelClassSelect.addEventListener("change", async (e) => {
@@ -101,7 +116,7 @@ function spinRandom() {
   const names = currentStudents.slice();
   const resultEl = randomResultEl;
   const start = performance.now();
-  const duration = 6000;
+  const duration = wheelDurationSeconds * 1000;
   const startSpeed = 40;
   const endSpeed = 260;
 

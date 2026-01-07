@@ -1499,6 +1499,56 @@ td[data-tooltip]:hover::before{
   to   { transform: rotate(360deg); }
 }
 
+/* Wheel controls */
+.wheel-card {
+  text-align:center;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.wheel-controls {
+  margin-bottom: 12px;
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+
+.wheel-class-control,
+.wheel-duration-control {
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.wheel-label {
+  font-weight:600;
+  font-size:13px;
+  white-space:nowrap;
+}
+
+.wheel-class-select {
+  max-width: 220px;
+  color:#333;
+  background:#fff;
+  border-color:#ddd;
+}
+
+.wheel-duration-input {
+  width: 52px;
+  padding: 6px 8px;
+  font-size: 13px;
+  text-align: center;
+  border-radius: 999px;
+  border: 1px solid #ddd;
+  background:#fff;
+  height: 34px;
+  box-sizing: border-box;
+}
+
 @media (max-width:600px){
   .countdown-title{font-size:18px;}
   .countdown{grid-template-columns:repeat(2,minmax(120px,1fr));}
