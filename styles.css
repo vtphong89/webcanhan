@@ -1048,19 +1048,19 @@ h2:hover i{
 .timetable-update-btn {
   display: inline-flex !important;
   align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
+  gap: 4px;
+  padding: 4px 8px;
   background: rgba(255, 255, 255, 0.25) !important;
   color: #667eea !important;
   text-decoration: none !important;
-  border-radius: 10px;
-  font-size: 12px;
+  border-radius: 6px;
+  font-size: 11px;
   font-weight: 600;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid rgba(102, 126, 234, 0.4) !important;
   backdrop-filter: blur(10px);
   white-space: nowrap;
-  box-shadow: 0 2px 4px rgba(102, 126, 234, 0.15);
+  box-shadow: 0 1px 2px rgba(102, 126, 234, 0.12);
   position: relative;
   z-index: 10;
 }
@@ -1599,6 +1599,26 @@ td[data-tooltip]:hover::before{
   grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
   gap:16px;
 }
+.teaching-plan-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:nowrap;
+  margin-bottom:10px;
+}
+.teaching-plan-header h2{
+  margin:0;
+}
+.teaching-plan-header .timetable-update-btn{
+  margin-left:auto;
+}
+
+@media (max-width:640px){
+  .teaching-plan-header{
+    flex-wrap:wrap;
+  }
+}
 .teaching-plan-embed{width:100%;max-width:100%;margin:0 auto;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.15);background:#fff;overflow:hidden;padding:20px;}
 .teaching-plan-class-title{
   margin:0 0 8px;
@@ -1689,5 +1709,31 @@ td[data-tooltip]:hover::before{
   th,td{padding:5px 2px;font-size:9px;}
   th{font-size:8px;padding:5px 1px;}
   .session-title{font-size:12px;}
+}
+
+/* Mobile tightening to reduce side gaps */
+@media (max-width:640px){
+  body:has(.gvcn-info){
+    padding:12px !important;
+  }
+  body:has(.gvcn-info) .container{
+    max-width:100% !important;
+    width:100% !important;
+    padding:16px !important;
+    border-radius:12px !important;
+    box-shadow:0 6px 18px rgba(0,0,0,0.08) !important;
+  }
+  .report-links{
+    padding-left:0;
+    padding-right:0;
+  }
+  .teaching-plan-layout{
+    gap:12px;
+  }
+  .teaching-plan-embed,
+  .wheel-card{
+    padding:16px;
+    border-radius:12px;
+  }
 }
 

@@ -26,6 +26,17 @@ function setupTimetableUpdateLink() {
   }
 }
 
+function setupTeachingPlanUpdateLink() {
+  const updateLink = document.getElementById("teaching-plan-update-link");
+  if (updateLink) {
+    if (typeof TEACHING_PLAN_EDIT_URL !== "undefined" && TEACHING_PLAN_EDIT_URL) {
+      updateLink.href = TEACHING_PLAN_EDIT_URL;
+    } else {
+      updateLink.href = "javascript:void(0)";
+    }
+  }
+}
+
 /**
  * Khởi tạo tất cả các module khi DOM đã sẵn sàng
  */
@@ -34,6 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
   
   // Thiết lập link cập nhật lịch dạy từ config
   setupTimetableUpdateLink();
+  setupTeachingPlanUpdateLink();
   
   // Khởi tạo các module
   if (typeof initWheel === "function") {
@@ -66,5 +78,6 @@ document.addEventListener("DOMContentLoaded", () => {
 // Đảm bảo link được set ngay cả khi scripts load không đúng thứ tự
 window.addEventListener("load", () => {
   setupTimetableUpdateLink();
+  setupTeachingPlanUpdateLink();
 });
 

@@ -26,6 +26,9 @@ const TIMETABLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSg
 // Link để chỉnh sửa/cập nhật Thời Khóa Biểu trên Google Sheets
 const TIMETABLE_EDIT_URL = "https://docs.google.com/spreadsheets/d/1LF78-08bL93xfCu9hdps4OXm2BiJhzXs/edit?usp=sharing&ouid=108769202968830582103&rtpof=true&sd=true";
 
+// Link chỉnh sửa Lịch Báo Giảng
+const TEACHING_PLAN_EDIT_URL = "https://docs.google.com/spreadsheets/d/1t7hApGRdGGOLHGi1P2AxTtW6pe_gp-n1ooTDZindiYQ/edit?usp=sharing";
+
 // URL Google Sheets cho Lịch Báo Giảng (CSV format)
 // Cột A: Tuần (số hoặc nhiều số cách nhau bằng dấu phẩy)
 // Cột B: Tiết thứ (số hoặc nhiều số cách nhau bằng dấu phẩy)
