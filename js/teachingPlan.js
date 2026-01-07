@@ -232,8 +232,19 @@ async function loadTeachingPlanForClass(classKey, url, currentWeek, label) {
       container.innerHTML = '<p class="teaching-plan-empty">Không có dữ liệu.</p>';
       return;
     }
-    
-    renderTeachingPlanForClass(records, currentWeek, container, statusEl, label);
+
+    // Lưu state cho điều hướng tuần
+    const weeks = Array.from(new Set(records.map(r => r.week))).sort((a,b)=>a-b);
+    let displayWeek = currentWeek && weeks.includes(currentWeek) ? currentWeek : (weeks[0] || null);
+    teachingPlanState[classKey] = {
+      records,
+      weeks,
+      currentWeek: displayWeek,
+      label
+    };
+
+    renderTeachingPlanForClass(records, displayWeek, container, statusEl, label);
+    updateTeachingPlanWeekLabel(classKey);
     
   } catch (error) {
     console.error("Error loading teaching plan:", error);
@@ -279,6 +290,46 @@ async function loadTeachingPlan() {
     )
   );
 }
+
+/**
+ * State cho điều hướng tuần
+ */
+const teachingPlanState = {};
+
+function updateTeachingPlanWeekLabel(classKey) {
+  const labelEl = document.getElementById(`teachingPlanWeek-${classKey}`);
+  const state = teachingPlanState[classKey];
+  if (labelEl && state && state.currentWeek) {
+    labelEl.textContent = `Tuần ${state.currentWeek}`;
+  }
+}
+
+function changeTeachingPlanWeek(classKey, delta) {
+  const state = teachingPlanState[classKey];
+  if (!state) return;
+  const idx = state.weeks.indexOf(state.currentWeek);
+  if (idx === -1) return;
+  const nextIdx = idx + delta;
+  if (nextIdx < 0 || nextIdx >= state.weeks.length) return;
+  state.currentWeek = state.weeks[nextIdx];
+
+  const container = document.getElementById(`teachingPlanContent-${classKey}`);
+  const statusEl = document.getElementById(`teachingPlanStatus-${classKey}`);
+  renderTeachingPlanForClass(state.records, state.currentWeek, container, statusEl, state.label);
+  updateTeachingPlanWeekLabel(classKey);
+}
+
+function teachingPlanPrev(classKey) {
+  changeTeachingPlanWeek(classKey, -1);
+}
+
+function teachingPlanNext(classKey) {
+  changeTeachingPlanWeek(classKey, 1);
+}
+
+// Expose to window
+window.teachingPlanPrev = teachingPlanPrev;
+window.teachingPlanNext = teachingPlanNext;
 
 /**
  * Khởi tạo module
