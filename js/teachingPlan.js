@@ -1,4 +1,23 @@
 /**
+ * Chuẩn hóa URL Google Sheets: nếu là pubhtml hoặc thiếu output=csv, chuyển sang output=csv
+ */
+function normalizeSheetUrl(url) {
+  if (!url) return url;
+  let out = url.trim();
+  if (out.includes("pubhtml")) {
+    // đổi pubhtml -> pub?output=csv
+    out = out.replace("pubhtml", "pub?output=csv");
+  } else if (!out.includes("output=csv")) {
+    // thêm output=csv nếu chưa có
+    if (out.includes("?")) {
+      out += "&output=csv";
+    } else {
+      out += "?output=csv";
+    }
+  }
+  return out;
+}
+/**
  * teachingPlan.js - Xử lý hiển thị Lịch Báo Giảng từ Google Sheets
  * 
  * Cấu trúc dữ liệu:
@@ -192,8 +211,10 @@ async function loadTeachingPlanForClass(classKey, url, currentWeek, label) {
       container.innerHTML = '<p class="teaching-plan-empty">Chưa có URL CSV cho lớp này.</p>';
       return;
     }
+
+    const fetchUrl = normalizeSheetUrl(url);
     
-    const response = await fetch(url, { cache: "no-store" });
+    const response = await fetch(fetchUrl, { cache: "no-store" });
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
