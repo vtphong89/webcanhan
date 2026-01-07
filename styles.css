@@ -1690,7 +1690,133 @@ td[data-tooltip]:hover::before{
 .teaching-plan-error{background:#fff3cd;border-left:4px solid #ffc107;color:#856404;}
 .teaching-plan-error small{display:block;margin-top:8px;font-size:12px;color:#856404;}
 
+/* Targets table - vertical layout for mobile */
+.targets-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.targets-table thead {
+  display: table-header-group;
+}
+
+.targets-table tbody {
+  display: table-row-group;
+}
+
+.targets-table tr {
+  display: table-row;
+}
+
+.targets-table th,
+.targets-table td {
+  display: table-cell;
+  padding: 12px 16px;
+  text-align: center;
+  border: 1px solid #e0e0e0;
+  font-size: 14px;
+}
+
+.targets-table th {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.targets-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.targets-table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
 @media (max-width:600px){
+  /* Transform targets table to vertical card layout on mobile */
+  .targets-table,
+  .targets-table thead,
+  .targets-table tbody,
+  .targets-table tr,
+  .targets-table th,
+  .targets-table td {
+    display: block;
+  }
+  
+  .targets-table thead {
+    display: none;
+  }
+  
+  .targets-table tbody tr {
+    display: block;
+    margin-bottom: 16px;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+  
+  .targets-table tbody tr:nth-child(even) {
+    background-color: #fff;
+  }
+  
+  .targets-table tbody tr:hover {
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  }
+  
+  .targets-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    border: none;
+    border-bottom: 1px solid #f0f0f0;
+    text-align: left;
+    font-size: 14px;
+  }
+  
+  .targets-table td:last-child {
+    border-bottom: none;
+  }
+  
+  .targets-table td:not(:first-child):before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #667eea;
+    margin-right: 12px;
+    flex-shrink: 0;
+    min-width: 100px;
+  }
+  
+  .targets-table td:first-child {
+    font-weight: 700;
+    font-size: 16px;
+    color: #667eea;
+    background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.08));
+    border-bottom: 2px solid #667eea;
+    margin-bottom: 0;
+    padding: 14px 12px;
+    justify-content: center;
+  }
+  
+  .targets-table td:first-child:before {
+    display: none;
+  }
+  
+  .targets-table td:first-child strong {
+    display: block;
+    width: 100%;
+    text-align: center;
+  }
+}
   .teaching-plan-embed{padding:15px;}
   .teaching-plan-table th,.teaching-plan-table td{padding:10px 12px;font-size:13px;}
   .teaching-plan-period{width:100px;min-width:100px;}

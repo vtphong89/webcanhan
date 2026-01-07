@@ -67,24 +67,24 @@ async function loadTargets() {
         </thead>
         <tbody>
           <tr>
-            <td><strong>Chủ nhiệm</strong></td>
-            <td>${cnExcellent}</td>
-            <td>${pct(cnExcellent, cnTotal)}</td>
-            <td>${cnGood}</td>
-            <td>${pct(cnGood, cnTotal)}</td>
-            <td>${cnWeak}</td>
-            <td>${pct(cnWeak, cnTotal)}</td>
-            <td>${cnTotal}</td>
+            <td data-label="Mục"><strong>Chủ nhiệm</strong></td>
+            <td data-label="HS xuất sắc">${cnExcellent}</td>
+            <td data-label="Tỷ lệ">${pct(cnExcellent, cnTotal)}</td>
+            <td data-label="HS giỏi">${cnGood}</td>
+            <td data-label="Tỷ lệ">${pct(cnGood, cnTotal)}</td>
+            <td data-label="HS yếu">${cnWeak}</td>
+            <td data-label="Tỷ lệ">${pct(cnWeak, cnTotal)}</td>
+            <td data-label="Tổng số HS">${cnTotal}</td>
           </tr>
           <tr>
-            <td><strong>Chỉ tiêu giảng dạy</strong></td>
-            <td>-</td>
-            <td>-</td>
-            <td>${teachGood}</td>
-            <td>${pct(teachGood, teachTotal)}</td>
-            <td>${teachWeak}</td>
-            <td>${pct(teachWeak, teachTotal)}</td>
-            <td>${teachTotal}</td>
+            <td data-label="Mục"><strong>Chỉ tiêu giảng dạy</strong></td>
+            <td data-label="HS xuất sắc">-</td>
+            <td data-label="Tỷ lệ">-</td>
+            <td data-label="HS giỏi">${teachGood}</td>
+            <td data-label="Tỷ lệ">${pct(teachGood, teachTotal)}</td>
+            <td data-label="HS yếu">${teachWeak}</td>
+            <td data-label="Tỷ lệ">${pct(teachWeak, teachTotal)}</td>
+            <td data-label="Tổng số HS">${teachTotal}</td>
           </tr>
         </tbody>
       </table>
