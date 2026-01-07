@@ -343,3 +343,18 @@ function initTeachingPlan() {
   }
 }
 
+/**
+ * Khởi tạo toggle ẩn/hiện Lịch báo giảng (giống Lịch Dạy)
+ */
+function initTeachingPlanToggle() {
+  const tpToggle = document.getElementById("teaching-plan-toggle");
+  const tpContent = document.getElementById("teaching-plan-content");
+
+  if (tpToggle && tpContent) {
+    tpToggle.addEventListener("click", () => {
+      tpToggle.classList.toggle("collapsed");
+      tpContent.classList.toggle("collapsed");
+    });
+  }
+}
+

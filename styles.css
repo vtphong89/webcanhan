@@ -1045,6 +1045,8 @@ h2:hover i{
 
 .timetable-section{overflow-x:hidden;margin-bottom:30px;}
 
+/* Đồng bộ kích thước header cho Lịch Dạy và Lịch báo giảng */
+.timetable-section h2.toggle-header,
 .report-links h2.toggle-header{
   display:flex;
   align-items:center;
@@ -1052,6 +1054,7 @@ h2:hover i{
   padding:16px;
   border-radius:16px;
 }
+.timetable-section h2.toggle-header > div,
 .report-links h2.toggle-header > div{
   margin-left:auto;
 }
@@ -1208,6 +1211,14 @@ td[data-tooltip]:hover::before{
 .link-1{background:linear-gradient(135deg,#6a11cb,#2575fc);}
 .link-2{background:linear-gradient(135deg,#11998e,#38ef7d);}
 .link-3{background:linear-gradient(135deg,#fc4a1a,#f7b733);}
+
+/* Ghi đè các link đặc biệt dạng nút nhỏ trong header (Cập nhật) để không bị to hơn */
+.report-links a.timetable-update-btn{
+  padding:4px 8px;
+  font-size:11px;
+  border-radius:6px;
+  box-shadow:0 1px 2px rgba(102,126,234,0.12);
+}
 .link-4{background:linear-gradient(135deg,#ff9966,#ff5e62);}
 .link-5{background:linear-gradient(135deg,#00c6ff,#0072ff);}
 .link-6{background:linear-gradient(135deg,#834d9b,#d04ed6);}
@@ -1746,6 +1757,7 @@ td[data-tooltip]:hover::before{
     padding:16px;
     border-radius:12px;
   }
+  .timetable-section h2.toggle-header,
   .report-links h2.toggle-header{
     padding:12px;
     gap:8px;

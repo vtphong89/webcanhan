@@ -67,7 +67,11 @@ document.addEventListener("DOMContentLoaded", () => {
   if (typeof initSchoolWeek === "function") {
     initSchoolWeek();
   }
-  
+
+  if (typeof initTeachingPlanToggle === "function") {
+    initTeachingPlanToggle();
+  }
+
   if (typeof initTeachingPlan === "function") {
     initTeachingPlan();
   }

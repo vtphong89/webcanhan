@@ -212,18 +212,21 @@
         </section>
 
         <section class="report-links">
-            <h2 class="toggle-header" style="cursor: default;">
+            <h2 id="teaching-plan-toggle" class="toggle-header collapsed" style="cursor: pointer;">
                 <i class="fas fa-book-open"></i> Lịch báo giảng
                 <div style="display: flex; align-items: center; gap: 10px; margin-left: auto;">
                     <a href="javascript:void(0)" 
                        id="teaching-plan-update-link"
                        target="_blank" 
                        class="timetable-update-btn" 
-                       title="Cập nhật lịch báo giảng">
+                       title="Cập nhật lịch báo giảng"
+                       onclick="event.stopPropagation();">
                         <i class="fas fa-edit"></i> Cập nhật
                     </a>
+                    <i class="fas fa-chevron-down toggle-icon" style="font-size: 18px; transition: transform 0.3s ease;"></i>
                 </div>
             </h2>
+            <div id="teaching-plan-content" class="timetable-content collapsed">
             <div class="teaching-plan-layout">
                 <div class="teaching-plan-embed">
                     <h3 class="teaching-plan-class-title">Lớp 11</h3>
@@ -249,6 +252,7 @@
                         <div id="teachingPlanContent-lop12"></div>
                     </div>
                 </div>
+            </div>
             </div>
         </section>
 
