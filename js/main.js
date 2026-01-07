@@ -102,6 +102,10 @@ document.addEventListener("DOMContentLoaded", () => {
   if (typeof initTargets === "function") {
     initTargets();
   }
+
+  if (typeof initNews === "function") {
+    initNews();
+  }
   
   console.log("All modules initialized.");
 });
