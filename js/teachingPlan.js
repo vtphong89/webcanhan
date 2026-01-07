@@ -32,6 +32,9 @@ function normalizeSheetUrl(url) {
  * Parse chuỗi số (có thể là số đơn, nhiều số cách nhau bằng dấu phẩy, hoặc khoảng)
  * Ví dụ: "1" -> [1], "1,2" -> [1,2], "1-3" -> [1,2,3], "1,3,5" -> [1,3,5]
  */
+// State cho điều hướng tuần
+const teachingPlanState = {};
+
 function parseNumberRange(str) {
   if (!str || !str.trim()) return [];
   
@@ -290,11 +293,6 @@ async function loadTeachingPlan() {
     )
   );
 }
-
-/**
- * State cho điều hướng tuần
- */
-const teachingPlanState = {};
 
 function updateTeachingPlanWeekLabel(classKey) {
   const labelEl = document.getElementById(`teachingPlanWeek-${classKey}`);
