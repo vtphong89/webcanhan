@@ -1695,9 +1695,9 @@ td[data-tooltip]:hover::before{
   width: 100%;
   border-collapse: collapse;
   background: #fff;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 16px rgba(102,126,234,0.15);
 }
 
 .targets-table thead {
@@ -1715,26 +1715,103 @@ td[data-tooltip]:hover::before{
 .targets-table th,
 .targets-table td {
   display: table-cell;
-  padding: 12px 16px;
+  padding: 14px 16px;
   text-align: center;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #e8edff;
   font-size: 14px;
 }
 
 .targets-table th {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+  background-size: 200% auto;
   color: #fff;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  animation: gradientShift 4s ease infinite;
 }
 
-.targets-table tbody tr:nth-child(even) {
-  background-color: #f9f9f9;
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.targets-table tbody tr:first-child {
+  background: linear-gradient(135deg, #f0f4ff 0%, #e8edff 100%);
+}
+
+.targets-table tbody tr:first-child:hover {
+  background: linear-gradient(135deg, #e3ebff 0%, #d6e0ff 100%);
+}
+
+.targets-table tbody tr:last-child {
+  background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+}
+
+.targets-table tbody tr:last-child:hover {
+  background: linear-gradient(135deg, #ffe0e0 0%, #ffd6d6 100%);
 }
 
 .targets-table tbody tr:hover {
-  background-color: #f1f1f1;
+  transform: scale(1.01);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(102,126,234,0.2);
+}
+
+/* Màu cho các cột giá trị */
+.targets-table td:nth-child(2) {
+  background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,193,7,0.1));
+  font-weight: 600;
+  color: #f57c00;
+}
+
+.targets-table td:nth-child(3) {
+  background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,193,7,0.05));
+  color: #f57c00;
+  font-weight: 500;
+}
+
+.targets-table td:nth-child(4) {
+  background: linear-gradient(135deg, rgba(76,175,80,0.15), rgba(56,142,60,0.1));
+  font-weight: 600;
+  color: #2e7d32;
+}
+
+.targets-table td:nth-child(5) {
+  background: linear-gradient(135deg, rgba(76,175,80,0.1), rgba(56,142,60,0.05));
+  color: #2e7d32;
+  font-weight: 500;
+}
+
+.targets-table td:nth-child(6) {
+  background: linear-gradient(135deg, rgba(244,67,54,0.15), rgba(211,47,47,0.1));
+  font-weight: 600;
+  color: #c62828;
+}
+
+.targets-table td:nth-child(7) {
+  background: linear-gradient(135deg, rgba(244,67,54,0.1), rgba(211,47,47,0.05));
+  color: #c62828;
+  font-weight: 500;
+}
+
+.targets-table td:nth-child(8) {
+  background: linear-gradient(135deg, rgba(102,126,234,0.15), rgba(118,75,162,0.1));
+  font-weight: 700;
+  color: #667eea;
+  font-size: 15px;
+}
+
+.targets-table td:first-child {
+  background: linear-gradient(135deg, rgba(102,126,234,0.2), rgba(118,75,162,0.15));
+  font-weight: 700;
+  color: #667eea;
+}
+
+.targets-table td:first-child strong {
+  color: #5568d3;
+  text-shadow: 0 1px 2px rgba(102,126,234,0.2);
 }
 
 @media (max-width:600px){
@@ -1752,35 +1829,50 @@ td[data-tooltip]:hover::before{
     display: none;
   }
   
-  .targets-table tbody tr {
-    display: block;
-    margin-bottom: 16px;
-    background: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 12px;
-    padding: 0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    overflow: hidden;
+  .targets-table tbody tr:first-child {
+    background: linear-gradient(135deg, #f0f4ff 0%, #e8edff 100%);
+    border: 2px solid #c7d2fe;
+    box-shadow: 0 4px 12px rgba(102,126,234,0.2);
   }
   
-  .targets-table tbody tr:nth-child(even) {
-    background-color: #fff;
+  .targets-table tbody tr:last-child {
+    background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+    border: 2px solid #ffb3ba;
+    box-shadow: 0 4px 12px rgba(255,107,107,0.2);
+  }
+  
+  .targets-table tbody tr {
+    display: block;
+    margin-bottom: 20px;
+    border-radius: 16px;
+    padding: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
   }
   
   .targets-table tbody tr:hover {
-    background-color: #f9f9f9;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  }
+  
+  .targets-table tbody tr:first-child:hover {
+    box-shadow: 0 6px 20px rgba(102,126,234,0.3);
+  }
+  
+  .targets-table tbody tr:last-child:hover {
+    box-shadow: 0 6px 20px rgba(255,107,107,0.3);
   }
   
   .targets-table td {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 12px;
+    padding: 12px 16px;
     border: none;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
     text-align: left;
     font-size: 14px;
+    transition: background 0.2s ease;
   }
   
   .targets-table td:last-child {
@@ -1793,18 +1885,85 @@ td[data-tooltip]:hover::before{
     color: #667eea;
     margin-right: 12px;
     flex-shrink: 0;
-    min-width: 100px;
+    min-width: 110px;
+    font-size: 13px;
+  }
+  
+  /* Màu cho các giá trị trên mobile */
+  .targets-table td:nth-child(2):not(:first-child) {
+    background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,193,7,0.1));
+    color: #f57c00;
+    font-weight: 600;
+  }
+  
+  .targets-table td:nth-child(2):not(:first-child):before {
+    color: #f57c00;
+  }
+  
+  .targets-table td:nth-child(3):not(:first-child) {
+    background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,193,7,0.05));
+    color: #f57c00;
+  }
+  
+  .targets-table td:nth-child(4):not(:first-child) {
+    background: linear-gradient(135deg, rgba(76,175,80,0.2), rgba(56,142,60,0.1));
+    color: #2e7d32;
+    font-weight: 600;
+  }
+  
+  .targets-table td:nth-child(4):not(:first-child):before {
+    color: #2e7d32;
+  }
+  
+  .targets-table td:nth-child(5):not(:first-child) {
+    background: linear-gradient(135deg, rgba(76,175,80,0.1), rgba(56,142,60,0.05));
+    color: #2e7d32;
+  }
+  
+  .targets-table td:nth-child(6):not(:first-child) {
+    background: linear-gradient(135deg, rgba(244,67,54,0.2), rgba(211,47,47,0.1));
+    color: #c62828;
+    font-weight: 600;
+  }
+  
+  .targets-table td:nth-child(6):not(:first-child):before {
+    color: #c62828;
+  }
+  
+  .targets-table td:nth-child(7):not(:first-child) {
+    background: linear-gradient(135deg, rgba(244,67,54,0.1), rgba(211,47,47,0.05));
+    color: #c62828;
+  }
+  
+  .targets-table td:nth-child(8):not(:first-child) {
+    background: linear-gradient(135deg, rgba(102,126,234,0.2), rgba(118,75,162,0.15));
+    font-weight: 700;
+    color: #667eea;
+    font-size: 15px;
+  }
+  
+  .targets-table td:nth-child(8):not(:first-child):before {
+    color: #667eea;
+    font-weight: 700;
   }
   
   .targets-table td:first-child {
     font-weight: 700;
-    font-size: 16px;
-    color: #667eea;
-    background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.08));
-    border-bottom: 2px solid #667eea;
+    font-size: 18px;
+    color: #fff;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+    background-size: 200% auto;
+    border-bottom: none;
     margin-bottom: 0;
-    padding: 14px 12px;
+    padding: 16px 12px;
     justify-content: center;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    animation: gradientShift 4s ease infinite;
+  }
+  
+  .targets-table tbody tr:last-child td:first-child {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #f093fb 100%);
+    background-size: 200% auto;
   }
   
   .targets-table td:first-child:before {
@@ -1815,6 +1974,7 @@ td[data-tooltip]:hover::before{
     display: block;
     width: 100%;
     text-align: center;
+    color: #fff;
   }
 }
   .teaching-plan-embed{padding:15px;}
