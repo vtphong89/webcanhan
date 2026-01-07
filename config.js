@@ -43,6 +43,9 @@ const TEACHING_PLAN_SHEETS = {
   lop12: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ8nwCjK3JbM_h6XH-2CLtIMrZ-t6BDxuAvvuz3dOPmk33M5kC3tMX0A0p__m_s8O5fCaQkHKvmR4vf/pubhtml?gid=1646673641&single=true"
 };
 
+// URL Google Sheets cho "Chỉ tiêu trong năm" (dùng link pubhtml, code sẽ tự chuyển CSV)
+const TARGETS_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSBt8nDRD0o0SYz36YSeLPIoRBTUkgU9UiTG_A8Fgp99TGmmZG5wJT8pAU0yzhPBBhabDVFbjWXgYbc/pubhtml";
+
 // Khung tuần năm học
 const SCHOOL_WEEKS_CONFIG = [
   { week: 1, from: "05/09/2025", to: "13/09/2025", note: "Khai giảng 05/09" },

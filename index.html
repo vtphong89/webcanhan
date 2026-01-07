@@ -134,6 +134,21 @@
             </div>
         </section>
 
+        <section class="report-links">
+            <h2 id="targets-toggle" class="toggle-header collapsed" style="cursor: pointer;">
+                <i class="fas fa-bullseye"></i> Chỉ tiêu trong năm
+                <div style="display: flex; align-items: center; gap: 10px; margin-left: auto;">
+                    <i class="fas fa-chevron-down toggle-icon" style="font-size: 18px; transition: transform 0.3s ease;"></i>
+                </div>
+            </h2>
+            <div id="targets-content" class="timetable-content collapsed">
+                <div id="targets-status" style="text-align:center; margin: 10px 0; font-size: 14px; color: #555;">
+                    Đang tải dữ liệu chỉ tiêu trong năm...
+                </div>
+                <div id="targets-table-wrap"></div>
+            </div>
+        </section>
+
         <section class="timetable-section">
             <h2 id="timetable-toggle" class="toggle-header collapsed" style="cursor: pointer;">
                 <i class="fas fa-calendar-alt"></i> Lịch Dạy
@@ -308,6 +323,7 @@
     <script src="js/countdown.js"></script>
     <script src="js/schoolWeek.js"></script>
     <script src="js/teachingPlan.js"></script>
+    <script src="js/targets.js"></script>
     <script src="js/main.js"></script>
 </body>
 

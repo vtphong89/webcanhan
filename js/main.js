@@ -75,6 +75,14 @@ document.addEventListener("DOMContentLoaded", () => {
   if (typeof initTeachingPlan === "function") {
     initTeachingPlan();
   }
+
+  if (typeof initTargetsToggle === "function") {
+    initTargetsToggle();
+  }
+
+  if (typeof initTargets === "function") {
+    initTargets();
+  }
   
   console.log("All modules initialized.");
 });
