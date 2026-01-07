@@ -30,7 +30,13 @@ const TIMETABLE_EDIT_URL = "https://docs.google.com/spreadsheets/d/1LF78-08bL93x
 // Cột A: Tuần (số hoặc nhiều số cách nhau bằng dấu phẩy)
 // Cột B: Tiết thứ (số hoặc nhiều số cách nhau bằng dấu phẩy)
 // Cột C: Bài dạy (tên bài)
-const TEACHING_PLAN_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ8nwCjK3JbM_h6XH-2CLtIMrZ-t6BDxuAvvuz3dOPmk33M5kC3tMX0A0p__m_s8O5fCaQkHKvmR4vf/pub?gid=0&single=true&output=csv";
+// Bạn có thể dùng 2 sheet riêng: "Lop 11" và "Lop 12"
+// và publish mỗi sheet ra CSV với gid khác nhau.
+// Ví dụ bên dưới dùng cùng 1 URL, hãy thay bằng URL CSV thật của từng sheet.
+const TEACHING_PLAN_SHEETS = {
+  lop11: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ8nwCjK3JbM_h6XH-2CLtIMrZ-t6BDxuAvvuz3dOPmk33M5kC3tMX0A0p__m_s8O5fCaQkHKvmR4vf/pub?gid=0&single=true&output=csv", // TODO: thay gid sheet Lớp 11
+  lop12: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ8nwCjK3JbM_h6XH-2CLtIMrZ-t6BDxuAvvuz3dOPmk33M5kC3tMX0A0p__m_s8O5fCaQkHKvmR4vf/pub?gid=0&single=true&output=csv"  // TODO: thay gid sheet Lớp 12
+};
 
 // Khung tuần năm học
 const SCHOOL_WEEKS_CONFIG = [

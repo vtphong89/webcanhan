@@ -108,38 +108,32 @@ function getCurrentWeek() {
 }
 
 /**
- * Render lịch báo giảng theo tuần hiện tại
+ * Render lịch báo giảng theo tuần hiện tại cho một lớp
  */
-function renderTeachingPlan(records, currentWeek) {
-  const container = document.getElementById("teachingPlanContent");
-  const statusEl = document.getElementById("teachingPlanStatus");
-  
+function renderTeachingPlanForClass(records, currentWeek, container, statusEl, classLabel) {
   if (!container) return;
-  
-  // Lọc theo tuần hiện tại
+
   const currentWeekRecords = records.filter(r => r.week === currentWeek);
   
   if (!currentWeekRecords || currentWeekRecords.length === 0) {
     container.innerHTML = `
       <div class="teaching-plan-empty">
-        <p>Không có lịch báo giảng cho tuần ${currentWeek || 'hiện tại'}.</p>
+        <p>Không có lịch báo giảng cho tuần ${currentWeek || 'hiện tại'}${classLabel ? ' (' + classLabel + ')' : ''}.</p>
       </div>
     `;
     if (statusEl) {
       statusEl.textContent = currentWeek 
-        ? `Không có dữ liệu cho tuần ${currentWeek}` 
+        ? `Không có dữ liệu cho tuần ${currentWeek}${classLabel ? ' - ' + classLabel : ''}` 
         : "Không xác định được tuần hiện tại";
     }
     return;
   }
   
-  // Sắp xếp theo tiết
   currentWeekRecords.sort((a, b) => a.period - b.period);
   
-  // Render bảng
   let html = `
     <div class="teaching-plan-info">
-      <p><strong>Tuần ${currentWeek}</strong> - ${currentWeekRecords.length} tiết</p>
+      <p><strong>Tuần ${currentWeek}</strong> - ${currentWeekRecords.length} tiết${classLabel ? ' (' + classLabel + ')' : ''}</p>
     </div>
     <table class="teaching-plan-table">
       <thead>
@@ -168,7 +162,7 @@ function renderTeachingPlan(records, currentWeek) {
   container.innerHTML = html;
   
   if (statusEl) {
-    statusEl.textContent = `Đã tải lịch báo giảng tuần ${currentWeek}`;
+    statusEl.textContent = `Đã tải lịch báo giảng tuần ${currentWeek}${classLabel ? ' - ' + classLabel : ''}`;
   }
 }
 
@@ -182,25 +176,24 @@ function escapeHtml(text) {
 }
 
 /**
- * Load và hiển thị lịch báo giảng
+ * Load và hiển thị lịch báo giảng cho một lớp
  */
-async function loadTeachingPlan() {
-  const statusEl = document.getElementById("teachingPlanStatus");
-  const container = document.getElementById("teachingPlanContent");
+async function loadTeachingPlanForClass(classKey, url, currentWeek, label) {
+  const statusEl = document.getElementById(`teachingPlanStatus-${classKey}`);
+  const container = document.getElementById(`teachingPlanContent-${classKey}`);
   
   if (!statusEl || !container) return;
   
   try {
-    statusEl.textContent = "Đang tải lịch báo giảng từ Google Sheets...";
+    statusEl.textContent = `Đang tải lịch báo giảng ${label || ''}...`.trim();
     
-    // Kiểm tra config
-    if (typeof TEACHING_PLAN_SHEET_URL === "undefined" || !TEACHING_PLAN_SHEET_URL) {
+    if (!url) {
       statusEl.textContent = "Chưa cấu hình URL Google Sheets cho lịch báo giảng.";
+      container.innerHTML = '<p class="teaching-plan-empty">Chưa có URL CSV cho lớp này.</p>';
       return;
     }
     
-    // Fetch CSV
-    const response = await fetch(TEACHING_PLAN_SHEET_URL, { cache: "no-store" });
+    const response = await fetch(url, { cache: "no-store" });
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
@@ -210,7 +203,6 @@ async function loadTeachingPlan() {
       throw new Error("Không có dữ liệu từ Google Sheets");
     }
     
-    // Parse CSV
     const records = parseTeachingPlanCSV(csvText);
     if (!records || records.length === 0) {
       statusEl.textContent = "Không đọc được dữ liệu lịch báo giảng.";
@@ -218,16 +210,7 @@ async function loadTeachingPlan() {
       return;
     }
     
-    // Lấy tuần hiện tại
-    const currentWeek = getCurrentWeek();
-    if (!currentWeek) {
-      statusEl.textContent = "Không xác định được tuần học hiện tại.";
-      container.innerHTML = '<p class="teaching-plan-empty">Vui lòng kiểm tra cấu hình tuần học.</p>';
-      return;
-    }
-    
-    // Render
-    renderTeachingPlan(records, currentWeek);
+    renderTeachingPlanForClass(records, currentWeek, container, statusEl, label);
     
   } catch (error) {
     console.error("Error loading teaching plan:", error);
@@ -239,6 +222,39 @@ async function loadTeachingPlan() {
       </div>
     `;
   }
+}
+
+/**
+ * Load và hiển thị lịch báo giảng cho tất cả lớp cấu hình
+ */
+async function loadTeachingPlan() {
+  const currentWeek = getCurrentWeek();
+  if (!currentWeek) {
+    const container = document.getElementById("teachingPlanContent-lop11") || document.getElementById("teachingPlanContent-lop12");
+    const statusEl = document.getElementById("teachingPlanStatus-lop11") || document.getElementById("teachingPlanStatus-lop12");
+    if (statusEl) statusEl.textContent = "Không xác định được tuần học hiện tại.";
+    if (container) {
+      container.innerHTML = '<p class="teaching-plan-empty">Vui lòng kiểm tra cấu hình tuần học.</p>';
+    }
+    return;
+  }
+
+  const sheets =
+    typeof TEACHING_PLAN_SHEETS !== "undefined" && TEACHING_PLAN_SHEETS
+      ? TEACHING_PLAN_SHEETS
+      : {};
+
+  const entries = Object.entries(sheets);
+  if (!entries.length) {
+    console.warn("TEACHING_PLAN_SHEETS chưa được cấu hình.");
+    return;
+  }
+
+  await Promise.all(
+    entries.map(([key, url]) =>
+      loadTeachingPlanForClass(key, url, currentWeek, key === "lop11" ? "Lớp 11" : key === "lop12" ? "Lớp 12" : key)
+    )
+  );
 }
 
 /**
