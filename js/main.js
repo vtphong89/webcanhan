@@ -37,6 +37,24 @@ function setupTeachingPlanUpdateLink() {
   }
 }
 
+function setupTargetsUpdateLink() {
+  const updateLink = document.getElementById("targets-update-link");
+  if (updateLink) {
+    // Đợi config.js load xong
+    if (typeof TARGETS_EDIT_URL !== "undefined" && TARGETS_EDIT_URL) {
+      updateLink.href = TARGETS_EDIT_URL;
+      console.log("Targets update link set from config");
+      retryCount = 0; // Reset counter
+    } else if (retryCount < MAX_RETRIES) {
+      // Retry nếu config chưa load
+      retryCount++;
+      setTimeout(setupTargetsUpdateLink, 100);
+    } else {
+      console.warn("TARGETS_EDIT_URL not found in config.js after retries");
+    }
+  }
+}
+
 /**
  * Khởi tạo tất cả các module khi DOM đã sẵn sàng
  */
@@ -46,6 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Thiết lập link cập nhật lịch dạy từ config
   setupTimetableUpdateLink();
   setupTeachingPlanUpdateLink();
+  setupTargetsUpdateLink();
   
   // Khởi tạo các module
   if (typeof initWheel === "function") {
@@ -91,5 +110,6 @@ document.addEventListener("DOMContentLoaded", () => {
 window.addEventListener("load", () => {
   setupTimetableUpdateLink();
   setupTeachingPlanUpdateLink();
+  setupTargetsUpdateLink();
 });
 

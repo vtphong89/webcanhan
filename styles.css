@@ -1214,10 +1214,39 @@ td[data-tooltip]:hover::before{
 
 /* Ghi đè các link đặc biệt dạng nút nhỏ trong header (Cập nhật) để không bị to hơn */
 .report-links a.timetable-update-btn{
-  padding:4px 8px;
-  font-size:11px;
-  border-radius:6px;
-  box-shadow:0 1px 2px rgba(102,126,234,0.12);
+  display: inline-flex !important;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px !important;
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: #667eea !important;
+  text-decoration: none !important;
+  border-radius: 6px;
+  font-size: 11px !important;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(102, 126, 234, 0.4) !important;
+  backdrop-filter: blur(10px);
+  white-space: nowrap;
+  box-shadow: 0 1px 2px rgba(102,126,234,0.12);
+  position: relative;
+  z-index: 10;
+}
+
+.report-links a.timetable-update-btn i {
+  font-size: 11px !important;
+}
+
+.report-links a.timetable-update-btn:hover {
+  background: rgba(255, 255, 255, 0.35) !important;
+  color: #5568d3 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+  border-color: rgba(102, 126, 234, 0.6) !important;
+}
+
+.report-links a.timetable-update-btn:active {
+  transform: translateY(0);
 }
 .link-4{background:linear-gradient(135deg,#ff9966,#ff5e62);}
 .link-5{background:linear-gradient(135deg,#00c6ff,#0072ff);}

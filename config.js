@@ -46,6 +46,9 @@ const TEACHING_PLAN_SHEETS = {
 // URL Google Sheets cho "Chỉ tiêu trong năm" (dùng link pubhtml, code sẽ tự chuyển CSV)
 const TARGETS_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSBt8nDRD0o0SYz36YSeLPIoRBTUkgU9UiTG_A8Fgp99TGmmZG5wJT8pAU0yzhPBBhabDVFbjWXgYbc/pubhtml";
 
+// Link chỉnh sửa Chỉ tiêu trong năm
+const TARGETS_EDIT_URL = "https://docs.google.com/spreadsheets/d/1URhkYkomXrcJwza3LL-rnbjKaHcjrpzX-2BmE5Q-wHM/edit?usp=sharing";
+
 // Khung tuần năm học
 const SCHOOL_WEEKS_CONFIG = [
   { week: 1, from: "05/09/2025", to: "13/09/2025", note: "Khai giảng 05/09" },
