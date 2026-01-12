@@ -49,7 +49,7 @@ function renderTimetableGrid(tableId, gridData) {
   } else {
     tbodyId = null;
   }
-  
+
   let tbody = tbodyId ? document.getElementById(tbodyId) : null;
   if (!tbody) {
     tbody = table.querySelector("tbody");
@@ -76,18 +76,18 @@ function renderTimetableGrid(tableId, gridData) {
     const periodTd = document.createElement("td");
     periodTd.textContent = period;
     tr.appendChild(periodTd);
-    
+
     const rowIdx = period - 1;
     const rowData = gridData[rowIdx] || Array(7).fill(null);
-    
+
     for (let dayIdx = 1; dayIdx <= 7; dayIdx++) {
       const colIdx = dayIdx - 1;
       const cellValue = rowData[colIdx];
-      
+
       const td = document.createElement("td");
       if (cellValue && String(cellValue).trim() !== "" && String(cellValue).trim() !== "null") {
         td.textContent = cellValue;
-        
+
         // Áp dụng màu tự động theo lớp học
         const color = getClassColor(cellValue);
         if (color) {
@@ -96,18 +96,18 @@ function renderTimetableGrid(tableId, gridData) {
           td.style.fontWeight = "600";
           td.style.cursor = "help";
           td.style.transition = "all 0.2s ease";
-          
+
           // Thêm hover effect
-          td.addEventListener("mouseenter", function() {
+          td.addEventListener("mouseenter", function () {
             this.style.transform = "scale(1.05)";
             this.style.boxShadow = "0 4px 12px rgba(0,0,0,0.2)";
           });
-          td.addEventListener("mouseleave", function() {
+          td.addEventListener("mouseleave", function () {
             this.style.transform = "scale(1)";
             this.style.boxShadow = "none";
           });
         }
-        
+
         // Thêm tooltip cho các lớp GVCN dạy
         const classLower = String(cellValue).toLowerCase().trim();
         if (classLower.includes("12c1") || classLower.includes("11b1") || classLower.includes("12c3")) {
@@ -121,7 +121,7 @@ function renderTimetableGrid(tableId, gridData) {
     }
     tbody.appendChild(tr);
   }
-  
+
   console.log(`Rendered ${tableId}: ${totalPeriods} rows created`);
 }
 
@@ -134,7 +134,7 @@ async function loadTimetable() {
     console.log("Timetable đang được load, bỏ qua request này");
     return;
   }
-  
+
   const statusEl = document.getElementById("timetable-status");
   if (!TIMETABLE_URL) {
     if (statusEl) statusEl.textContent = "Chưa cấu hình URL thời khóa biểu.";
@@ -149,11 +149,11 @@ async function loadTimetable() {
       statusEl.style.color = "#555";
       statusEl.style.display = "block";
     }
-    
+
     // RESET CACHE MÀU mỗi lần load
     resetColorCache();
     console.log("Reset color cache");
-    
+
     // XÓA SẠCH DỮ LIỆU CŨ TRƯỚC
     const morningBody = document.getElementById("timetable-morning-body");
     const afternoonBody = document.getElementById("timetable-afternoon-body");
@@ -161,31 +161,32 @@ async function loadTimetable() {
     if (morningBody) morningBody.innerHTML = "";
     if (afternoonBody) afternoonBody.innerHTML = "";
     if (eveningBody) eveningBody.innerHTML = "";
-    
-    const resp = await fetch(TIMETABLE_URL, { cache: "no-store" });
+
+    // Gọi API serverless thay vì truy cập trực tiếp Google Sheets
+    const resp = await fetch('/api/get-timetable', { cache: "no-store" });
     if (!resp.ok) throw new Error("HTTP " + resp.status);
     const text = await resp.text();
     console.log("CSV raw text (first 2000 chars):", text.substring(0, 2000));
-    
+
     const rows = parseCsv(text);
     console.log("Parsed rows count:", rows.length);
     console.log("First 10 rows:", rows.slice(0, 10));
-    
+
     if (!rows.length) throw new Error("Không có dữ liệu");
 
     // Tìm header row với các cột: TIẾT, T2, T3, T4, T5, T6, T7, CN
     let headerRowIdx = -1;
     let colMap = {};
-    
+
     // Thử tìm header trong 15 dòng đầu
     for (let i = 0; i < Math.min(15, rows.length); i++) {
       const row = rows[i] || [];
       const rowLower = row.map(c => String(c || "").toLowerCase().trim());
-      
+
       let foundTiet = false;
       let foundDays = 0;
       const tempColMap = {};
-      
+
       rowLower.forEach((cell, idx) => {
         const cellLower = String(cell).toLowerCase().trim();
         if (cellLower === "tiết" || cellLower === "tiet" || cellLower === "period" || cellLower.includes("tiết")) {
@@ -221,7 +222,7 @@ async function loadTimetable() {
           foundDays++;
         }
       });
-      
+
       // Nếu tìm thấy ít nhất TIẾT và 2 cột thứ trở lên
       if (foundTiet && foundDays >= 2) {
         headerRowIdx = i;
@@ -229,7 +230,7 @@ async function loadTimetable() {
         console.log(`Found header at row ${i} with ${foundDays} day columns`);
         break;
       }
-      
+
       // Nếu không tìm thấy TIẾT nhưng có nhiều cột thứ
       if (!foundTiet && foundDays >= 4) {
         headerRowIdx = i;
@@ -239,12 +240,12 @@ async function loadTimetable() {
         break;
       }
     }
-    
+
     if (headerRowIdx === -1) {
       console.error("Could not find header row. First 10 rows:", rows.slice(0, 10));
       throw new Error("Không tìm thấy header row với định dạng TIẾT, T2-T7, CN. Xem Console để biết chi tiết.");
     }
-    
+
     console.log("Header row index:", headerRowIdx);
     console.log("Column mapping:", colMap);
 
@@ -263,17 +264,17 @@ async function loadTimetable() {
     const morningData = Array(5).fill(null).map(() => Array(7).fill(null));
     const afternoonData = Array(5).fill(null).map(() => Array(7).fill(null));
     const eveningData = Array(5).fill(null).map(() => Array(7).fill(null));
-    
+
     let currentSession = "morning"; // mặc định là sáng
     let countAdded = 0;
-    
+
     for (let i = headerRowIdx + 1; i < rows.length; i++) {
       const row = rows[i] || [];
       if (row.length === 0) continue;
-      
+
       const firstCell = String(row[0] || "").trim().toLowerCase();
       const firstCellFull = String(row[0] || "").trim();
-      
+
       // Kiểm tra nếu là marker buổi
       let isSessionMarker = false;
       if (firstCell.includes("7h") || firstCell.includes("sáng") || firstCell === "morning" || firstCellFull.match(/^7[:\s]/i)) {
@@ -291,11 +292,11 @@ async function loadTimetable() {
       if (firstCell.includes("nghỉ") || firstCell.includes("break") || firstCell.includes("rest")) {
         continue; // Bỏ qua dòng nghỉ
       }
-      
+
       // Lấy số tiết từ cột TIẾT
       let periodStr = "";
       let period = null;
-      
+
       if (colMap.tiet !== undefined && row[colMap.tiet] !== undefined && row[colMap.tiet] !== null) {
         periodStr = String(row[colMap.tiet]).trim();
         period = parseInt(periodStr);
@@ -305,15 +306,15 @@ async function loadTimetable() {
           period = null;
         }
       }
-      
+
       // Nếu không có từ cột TIẾT, tìm số trong các cột từ index 1 trở đi
       if (!period || period < 1 || period > 5) {
         for (let j = 1; j < Math.min(6, row.length); j++) {
           const testStr = String(row[j] || "").trim();
-          if (testStr.toLowerCase().includes("7h") || testStr.toLowerCase().includes("2h") || 
-              testStr.toLowerCase().includes("20h") || testStr.toLowerCase().includes("20h30") ||
-              testStr.toLowerCase().includes("sáng") || testStr.toLowerCase().includes("chiều") ||
-              testStr.toLowerCase().includes("tối") || testStr.toLowerCase().includes("evening")) {
+          if (testStr.toLowerCase().includes("7h") || testStr.toLowerCase().includes("2h") ||
+            testStr.toLowerCase().includes("20h") || testStr.toLowerCase().includes("20h30") ||
+            testStr.toLowerCase().includes("sáng") || testStr.toLowerCase().includes("chiều") ||
+            testStr.toLowerCase().includes("tối") || testStr.toLowerCase().includes("evening")) {
             continue;
           }
           const testNum = parseInt(testStr);
@@ -324,14 +325,14 @@ async function loadTimetable() {
           }
         }
       }
-      
+
       // Nếu vẫn không có và không phải session marker, thử từ cột đầu tiên
       if ((!period || period < 1 || period > 5) && !isSessionMarker && row[0]) {
         const firstStr = String(row[0]).trim();
         if (!firstStr.toLowerCase().includes("7h") && !firstStr.toLowerCase().includes("2h") &&
-            !firstStr.toLowerCase().includes("20h") && !firstStr.toLowerCase().includes("20h30") &&
-            !firstStr.toLowerCase().includes("sáng") && !firstStr.toLowerCase().includes("chiều") &&
-            !firstStr.toLowerCase().includes("tối") && !firstStr.toLowerCase().includes("evening")) {
+          !firstStr.toLowerCase().includes("20h") && !firstStr.toLowerCase().includes("20h30") &&
+          !firstStr.toLowerCase().includes("sáng") && !firstStr.toLowerCase().includes("chiều") &&
+          !firstStr.toLowerCase().includes("tối") && !firstStr.toLowerCase().includes("evening")) {
           periodStr = firstStr;
           period = parseInt(periodStr);
           if (period >= 1 && period <= 5) {
@@ -341,7 +342,7 @@ async function loadTimetable() {
           }
         }
       }
-      
+
       // Nếu không tìm thấy số tiết hợp lệ, bỏ qua
       if (!period || period < 1 || period > 5) {
         let hasData = false;
@@ -361,7 +362,7 @@ async function loadTimetable() {
           continue; // Có dữ liệu nhưng không có số tiết - bỏ qua
         }
       }
-      
+
       const rowIdx = period - 1;
       let targetData;
       if (currentSession === "morning") {
@@ -373,15 +374,15 @@ async function loadTimetable() {
       } else {
         targetData = morningData; // fallback
       }
-      
+
       // Đọc giá trị lớp từ các cột T2-T7 và CN
       for (const [dayKey, dayIdx] of Object.entries(dayColMap)) {
         const colIdx = colMap[dayKey];
         if (colIdx !== undefined && colIdx < row.length && row[colIdx] !== undefined && row[colIdx] !== null) {
           const cellValue = String(row[colIdx]).trim();
-          if (cellValue && cellValue !== "-" && cellValue !== "" && 
-              cellValue.toLowerCase() !== "nghỉ" && cellValue.toLowerCase() !== "null" &&
-              cellValue.toLowerCase() !== "nghỉ ngơi" && cellValue.toLowerCase() !== "break") {
+          if (cellValue && cellValue !== "-" && cellValue !== "" &&
+            cellValue.toLowerCase() !== "nghỉ" && cellValue.toLowerCase() !== "null" &&
+            cellValue.toLowerCase() !== "nghỉ ngơi" && cellValue.toLowerCase() !== "break") {
             const arrayIdx = dayIdx - 1;
             if (arrayIdx >= 0 && arrayIdx < 7 && rowIdx >= 0 && rowIdx < 5) {
               targetData[rowIdx][arrayIdx] = cellValue;
@@ -391,7 +392,7 @@ async function loadTimetable() {
         }
       }
     }
-    
+
     console.log(`Parsed sessions. Total cells filled: ${countAdded}`);
 
     // Render vào 3 bảng
@@ -424,7 +425,7 @@ async function loadTimetable() {
 function initTimetableToggle() {
   const timetableToggle = document.getElementById("timetable-toggle");
   const timetableContent = document.getElementById("timetable-content");
-  
+
   if (timetableToggle && timetableContent) {
     timetableToggle.addEventListener("click", () => {
       timetableToggle.classList.toggle("collapsed");

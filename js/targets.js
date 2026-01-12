@@ -10,18 +10,8 @@ async function loadTargets() {
     statusEl.textContent = "Đang tải dữ liệu chỉ tiêu trong năm...";
     statusEl.style.color = "#555";
 
-    if (typeof TARGETS_SHEET_URL === "undefined" || !TARGETS_SHEET_URL) {
-      statusEl.textContent = "Chưa cấu hình URL chỉ tiêu trong năm.";
-      return;
-    }
-
-    // Chuẩn hóa URL sang CSV (dùng hàm normalizeSheetUrl nếu có)
-    let fetchUrl =
-      typeof normalizeSheetUrl === "function"
-        ? normalizeSheetUrl(TARGETS_SHEET_URL)
-        : TARGETS_SHEET_URL;
-
-    const resp = await fetch(fetchUrl, { cache: "no-store" });
+    // Gọi API serverless thay vì truy cập trực tiếp Google Sheets
+    const resp = await fetch('/api/get-targets', { cache: "no-store" });
     if (!resp.ok) {
       throw new Error("HTTP " + resp.status);
     }

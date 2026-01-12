@@ -2,6 +2,18 @@
   "functions": {
     "api/get-news.js": {
       "maxDuration": 10
+    },
+    "api/get-timetable.js": {
+      "maxDuration": 10
+    },
+    "api/get-wheel-students.js": {
+      "maxDuration": 10
+    },
+    "api/get-teaching-plan.js": {
+      "maxDuration": 10
+    },
+    "api/get-targets.js": {
+      "maxDuration": 10
     }
   },
   "headers": [
@@ -24,4 +36,3 @@
     }
   ]
 }
-

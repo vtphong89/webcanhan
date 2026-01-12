@@ -38,13 +38,13 @@ const teachingPlanState = {};
 
 function parseNumberRange(str) {
   if (!str || !str.trim()) return [];
-  
+
   const cleaned = str.toString().trim();
   const numbers = [];
-  
+
   // Tách theo dấu phẩy trước
   const parts = cleaned.split(',').map(s => s.trim());
-  
+
   for (const part of parts) {
     if (part.includes('-')) {
       // Xử lý khoảng (ví dụ: "1-3")
@@ -62,7 +62,7 @@ function parseNumberRange(str) {
       }
     }
   }
-  
+
   return numbers;
 }
 
@@ -72,31 +72,31 @@ function parseNumberRange(str) {
 function parseTeachingPlanCSV(csvText) {
   const rows = parseCsv(csvText);
   if (!rows || rows.length < 2) return [];
-  
+
   const records = [];
   let lastWeek = null;
   let lastPeriod = null;
-  
+
   // Bỏ qua header (dòng đầu)
   for (let i = 1; i < rows.length; i++) {
     const row = rows[i];
     if (!row || row.length < 3) continue;
-    
+
     const weekStr = (row[0] || '').trim();
     const periodStr = (row[1] || '').trim();
     const lesson = (row[2] || '').trim();
-    
+
     // Xử lý merge cells: nếu ô trống, dùng giá trị từ dòng trước
     const currentWeek = weekStr || lastWeek;
     const currentPeriod = periodStr || lastPeriod;
-    
+
     // Bỏ qua dòng không có dữ liệu
     if (!currentWeek && !currentPeriod && !lesson) continue;
-    
+
     // Parse tuần và tiết
     const weeks = parseNumberRange(currentWeek);
     const periods = parseNumberRange(currentPeriod);
-    
+
     // Nếu có tuần và tiết hợp lệ
     if (weeks.length > 0 && periods.length > 0 && lesson) {
       // Tạo record cho mỗi tổ hợp tuần-tiết
@@ -110,12 +110,12 @@ function parseTeachingPlanCSV(csvText) {
         }
       }
     }
-    
+
     // Cập nhật giá trị cuối cùng (để xử lý merge cells)
     if (weekStr) lastWeek = weekStr;
     if (periodStr) lastPeriod = periodStr;
   }
-  
+
   return records;
 }
 
@@ -137,7 +137,7 @@ function renderTeachingPlanForClass(records, currentWeek, container, statusEl, c
   if (!container) return;
 
   const currentWeekRecords = records.filter(r => r.week === currentWeek);
-  
+
   if (!currentWeekRecords || currentWeekRecords.length === 0) {
     container.innerHTML = `
       <div class="teaching-plan-empty">
@@ -145,15 +145,15 @@ function renderTeachingPlanForClass(records, currentWeek, container, statusEl, c
       </div>
     `;
     if (statusEl) {
-      statusEl.textContent = currentWeek 
-        ? `Không có dữ liệu cho tuần ${currentWeek}${classLabel ? ' - ' + classLabel : ''}` 
+      statusEl.textContent = currentWeek
+        ? `Không có dữ liệu cho tuần ${currentWeek}${classLabel ? ' - ' + classLabel : ''}`
         : "Không xác định được tuần hiện tại";
     }
     return;
   }
-  
+
   currentWeekRecords.sort((a, b) => a.period - b.period);
-  
+
   let html = `
     <div class="teaching-plan-info">
       <p><strong>Tuần ${currentWeek}</strong> - ${currentWeekRecords.length} tiết${classLabel ? ' (' + classLabel + ')' : ''}</p>
@@ -167,7 +167,7 @@ function renderTeachingPlanForClass(records, currentWeek, container, statusEl, c
       </thead>
       <tbody>
   `;
-  
+
   currentWeekRecords.forEach(record => {
     html += `
       <tr>
@@ -176,14 +176,14 @@ function renderTeachingPlanForClass(records, currentWeek, container, statusEl, c
       </tr>
     `;
   });
-  
+
   html += `
       </tbody>
     </table>
   `;
-  
+
   container.innerHTML = html;
-  
+
   if (statusEl) {
     statusEl.textContent = `Đã tải lịch báo giảng tuần ${currentWeek}${classLabel ? ' - ' + classLabel : ''}`;
   }
@@ -204,32 +204,25 @@ function escapeHtml(text) {
 async function loadTeachingPlanForClass(classKey, url, currentWeek, label) {
   const statusEl = document.getElementById(`teachingPlanStatus-${classKey}`);
   const container = document.getElementById(`teachingPlanContent-${classKey}`);
-  
+
   if (!statusEl || !container) return;
-  
+
   try {
     statusEl.textContent = `Đang tải lịch báo giảng ${label || ''}...`.trim();
-    
-    if (!url) {
-      statusEl.textContent = "Chưa cấu hình URL Google Sheets cho lịch báo giảng.";
-      container.innerHTML = '<p class="teaching-plan-empty">Chưa có URL CSV cho lớp này.</p>';
-      return;
-    }
 
-    let fetchUrl = normalizeSheetUrl(url);
-    // Cache buster để tránh dùng lại dữ liệu cũ
-    fetchUrl += (fetchUrl.includes("?") ? "&" : "?") + "nocache=" + Date.now();
-    
-    const response = await fetch(fetchUrl, { cache: "no-store" });
+    // Gọi API serverless thay vì truy cập trực tiếp Google Sheets
+    const response = await fetch(`/api/get-teaching-plan?class=${classKey}`, {
+      cache: "no-store"
+    });
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
-    
+
     const csvText = await response.text();
     if (!csvText || !csvText.trim()) {
       throw new Error("Không có dữ liệu từ Google Sheets");
     }
-    
+
     const records = parseTeachingPlanCSV(csvText);
     if (!records || records.length === 0) {
       statusEl.textContent = "Không đọc được dữ liệu lịch báo giảng.";
@@ -238,7 +231,7 @@ async function loadTeachingPlanForClass(classKey, url, currentWeek, label) {
     }
 
     // Lưu state cho điều hướng tuần
-    const weeks = Array.from(new Set(records.map(r => r.week))).sort((a,b)=>a-b);
+    const weeks = Array.from(new Set(records.map(r => r.week))).sort((a, b) => a - b);
     let displayWeek = currentWeek && weeks.includes(currentWeek) ? currentWeek : (weeks[0] || null);
     teachingPlanState[classKey] = {
       records,
@@ -249,7 +242,7 @@ async function loadTeachingPlanForClass(classKey, url, currentWeek, label) {
 
     renderTeachingPlanForClass(records, displayWeek, container, statusEl, label);
     updateTeachingPlanWeekLabel(classKey);
-    
+
   } catch (error) {
     console.error("Error loading teaching plan:", error);
     statusEl.textContent = `Lỗi: ${error.message}`;

@@ -56,24 +56,24 @@ function setWheelStatus(text) {
 }
 
 /**
- * Tải danh sách học sinh từ Google Sheets theo lớp
+ * Tải danh sách học sinh từ API serverless (bảo mật hơn)
  */
 async function loadStudentsForClass(classId) {
   try {
-    const url = WHEEL_SHEETS[classId];
-    if (!url) {
-      currentStudents = [];
-      setWheelStatus(`Chưa cấu hình URL cho lớp ${classId}.`);
-      return;
-    }
+    setWheelStatus(`Đang tải danh sách ${classId}...`);
 
-    setWheelStatus(`Đang tải danh sách ${classId} từ Google Sheets...`);
-    const resp = await fetch(url, { cache: "no-store" });
+    // Gọi API serverless thay vì truy cập trực tiếp Google Sheets
+    const resp = await fetch(`/api/get-wheel-students?class=${classId}`, {
+      cache: "no-store"
+    });
+
     if (!resp.ok) {
       throw new Error("HTTP " + resp.status);
     }
+
     const text = await resp.text();
     const rows = parseCsv(text);
+
     if (!rows.length) {
       throw new Error("Không có dữ liệu");
     }
@@ -93,7 +93,7 @@ async function loadStudentsForClass(classId) {
     console.error(e);
     currentStudents = [];
     setWheelStatus(
-      `Không tải được danh sách lớp ${classId}. Kiểm tra lại link CSV hoặc kết nối mạng.`
+      `Không tải được danh sách lớp ${classId}. Kiểm tra lại kết nối mạng.`
     );
   }
 }
@@ -106,10 +106,10 @@ function saveSpunName(className, name) {
     const key = `wheel_spun_${className}`;
     const data = JSON.parse(localStorage.getItem(key) || "[]");
     const now = Date.now();
-    
+
     // Thêm tên mới với timestamp
     data.push({ name, timestamp: now });
-    
+
     // Lưu lại
     localStorage.setItem(key, JSON.stringify(data));
   } catch (e) {
@@ -126,24 +126,24 @@ function getAvailableNames(className, allNames) {
     const data = JSON.parse(localStorage.getItem(key) || "[]");
     const now = Date.now();
     const cooldownMs = COOLDOWN_MINUTES * 60 * 1000; // 90 phút = 5400000 ms
-    
+
     // Lọc bỏ các tên đã quay trong vòng 90 phút
     const recentSpunNames = new Set(
       data
         .filter(item => (now - item.timestamp) < cooldownMs)
         .map(item => item.name)
     );
-    
+
     // Trả về danh sách tên chưa quay hoặc đã hết thời gian chờ
     const available = allNames.filter(name => !recentSpunNames.has(name));
-    
+
     // Nếu không còn tên nào, reset và trả về tất cả
     if (available.length === 0) {
       // Xóa dữ liệu cũ
       localStorage.removeItem(key);
       return allNames;
     }
-    
+
     return available;
   } catch (e) {
     console.error("Error getting available names:", e);
@@ -165,7 +165,7 @@ function spinRandom() {
 
   // Lấy danh sách tên còn lại (loại bỏ tên đã quay trong 90 phút)
   const availableNames = getAvailableNames(currentClassId, currentStudents);
-  
+
   if (availableNames.length === 0) {
     if (randomResultEl) {
       randomResultEl.textContent = "Tất cả học sinh đã được quay trong 90 phút qua.";
@@ -199,7 +199,7 @@ function spinRandom() {
 
     const randomIndex = Math.floor(Math.random() * names.length);
     const currentName = names[randomIndex];
-    
+
     if (resultEl) {
       resultEl.textContent = currentName;
       resultEl.style.color = "#333";
@@ -208,10 +208,10 @@ function spinRandom() {
     if (progress >= 1) {
       // Chọn tên cuối cùng
       selectedName = currentName;
-      
+
       // Lưu tên đã quay
       saveSpunName(currentClassId, selectedName);
-      
+
       if (resultEl) {
         resultEl.style.color = "#e74c3c";
         resultEl.style.transform = "scale(1.2)";
