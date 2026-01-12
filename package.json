@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Trang làm việc cá nhân dành cho Giáo viên",
   "main": "index.html",
+  "type": "commonjs",
   "scripts": {
     "dev": "vercel dev",
     "build": "echo 'No build step required'"
@@ -13,7 +14,6 @@
   },
   "devDependencies": {},
   "engines": {
-    "node": ">=18.x"
+    "node": "18.x"
   }
 }
-

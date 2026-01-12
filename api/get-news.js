@@ -8,14 +8,22 @@ let cachedData = null;
 let cacheTime = null;
 const CACHE_DURATION = 60 * 60 * 1000; // 1 giờ (milliseconds)
 
+// Vercel Serverless Function Handler
 module.exports = async (req, res) => {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Content-Type', 'application/json');
 
+  // Handle preflight
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
+  }
+
+  // Only allow GET requests
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {

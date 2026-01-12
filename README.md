@@ -128,31 +128,62 @@ Trong `index.html`, các script được load theo thứ tự:
    ```
    Sau đó truy cập: `http://localhost:8000/`
 
-## 🚀 Deploy lên Vercel (cho tính năng tin tức)
+## 🚀 Deploy lên Vercel từ GitHub (cho tính năng tin tức)
 
 Tính năng tin tức toán học cần serverless function, nên cần deploy lên Vercel:
 
-1. **Cài đặt Vercel CLI** (nếu chưa có):
+### Cách 1: Deploy qua Vercel Dashboard (Khuyến nghị - Dễ nhất)
+
+1. **Đảm bảo code đã push lên GitHub**:
+   ```bash
+   git add .
+   git commit -m "Add news feature"
+   git push origin main
+   ```
+
+2. **Kết nối với Vercel**:
+   - Truy cập [vercel.com](https://vercel.com) và đăng nhập bằng GitHub
+   - Click **"Add New Project"**
+   - Chọn repository GitHub của bạn
+   - Vercel sẽ tự động phát hiện cấu trúc dự án
+
+3. **Cấu hình Project**:
+   - **Framework Preset**: Chọn "Other" hoặc để mặc định
+   - **Root Directory**: `./` (mặc định)
+   - **Build Command**: Để trống hoặc `npm run build`
+   - **Output Directory**: Để trống (Vercel sẽ tự động serve static files)
+   - Click **"Deploy"**
+
+4. **Sau khi deploy thành công**:
+   - Vercel sẽ cung cấp URL như: `https://your-project.vercel.app`
+   - **KHÔNG CẦN** cập nhật URL trong `js/news.js` vì đã dùng relative path `/api/get-news`
+   - API sẽ tự động hoạt động tại: `https://your-project.vercel.app/api/get-news`
+
+5. **Kiểm tra**:
+   - Mở `https://your-project.vercel.app` trong trình duyệt
+   - Click vào section "Tin tức Toán học mới nhất" để test
+
+### Cách 2: Deploy bằng Vercel CLI
+
+1. **Cài đặt Vercel CLI**:
    ```bash
    npm install -g vercel
    ```
 
-2. **Deploy**:
+2. **Login và deploy**:
    ```bash
+   vercel login
    vercel
    ```
-   Hoặc kết nối GitHub repo với Vercel qua web interface.
+   - Chọn scope và project name
+   - Vercel sẽ tự động detect và deploy
 
-3. **Cập nhật URL API** trong `js/news.js`:
-   - Sau khi deploy, Vercel sẽ cung cấp URL như: `https://your-project.vercel.app`
-   - Cập nhật `NEWS_API_URL` trong `js/news.js`:
-     ```javascript
-     const NEWS_API_URL = 'https://your-project.vercel.app/api/get-news';
-     ```
+### Lưu ý quan trọng:
 
-4. **Lưu ý**: 
-   - Serverless function sẽ tự động cache dữ liệu trong 1 giờ
-   - Nếu cần điều chỉnh selector HTML của ToanMath, chỉnh sửa trong `api/get-news.js`
+- ✅ **Không cần cập nhật URL**: Code đã dùng relative path `/api/get-news`, sẽ tự động hoạt động trên Vercel
+- ✅ **Auto deploy**: Mỗi lần push code lên GitHub, Vercel sẽ tự động deploy lại
+- ✅ **Cache**: Serverless function tự động cache dữ liệu trong 1 giờ để tối ưu hiệu suất
+- 🔧 **Nếu cần điều chỉnh**: Chỉnh sửa selector HTML trong `api/get-news.js` nếu cấu trúc ToanMath thay đổi
 
 ## 🔄 Cập nhật dữ liệu
 
