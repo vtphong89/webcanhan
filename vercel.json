@@ -1,4 +1,5 @@
 {
+  "buildCommand": null,
   "functions": {
     "api/get-news.js": {
       "maxDuration": 10
