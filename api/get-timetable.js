@@ -1,6 +1,9 @@
 // api/get-timetable.js
 // Serverless function để lấy thời khóa biểu từ Google Sheets
-// URLs được giấu trong environment variables trên Vercel
+// URLs được giấu trong environment variables
+
+// Ensure fetch is available (Node.js 18+ has it built-in)
+const fetch = globalThis.fetch || require('node-fetch');
 
 module.exports = async (req, res) => {
     // Enable CORS

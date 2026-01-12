@@ -2,6 +2,9 @@
 // Serverless function để lấy danh sách học sinh cho vòng quay
 // URLs được giấu trong environment variables
 
+// Ensure fetch is available
+const fetch = globalThis.fetch || require('node-fetch');
+
 module.exports = async (req, res) => {
     // Enable CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
